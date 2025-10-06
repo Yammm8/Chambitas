@@ -1,0 +1,30 @@
+<nav class="navbar bg-body-tertiary navbar-expand-lg my-navbar">
+  <div class="container-fluid d-flex justify-content-between align-items-center">
+    <a class="navbar-brand d-flex align-items-center" routerLink="/">
+      <i class="bi bi-briefcase-fill fs-3" style="cursor: pointer;"></i>
+    </a>
+
+    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+      <ul class="navbar-nav">
+        @for (item of menuList; track $index) {
+          <li class="nav-item mx-2">
+            <a class="nav-link" [routerLink]="item.route" routerLinkActive="active">{{item.name}}</a>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <div class="d-flex gap-3">
+      <button class="btn btn-outline-dark" routerLink="/login">
+        <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
+      </button>
+      <button class="btn custom-btn" routerLink="/login">
+        <i class="bi bi-door-open-fill"></i> Registrarse
+      </button>
+    </div>
+
+    <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  </div>
+</nav>
