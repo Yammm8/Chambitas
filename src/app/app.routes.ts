@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { Home } from './pages/home/home';
 import { Profile } from './pages/profile/profile';
 import { Dashboard } from './pages/dashboard/dashboard';
+import { ProfileLocked } from './pages/profile-locked/profile-locked';
 
 export const routes: Routes = [
     {

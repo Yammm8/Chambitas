@@ -19,17 +19,17 @@
       </div>
 
       <div class="ms-3">
-        <button class="btn custom-btn gap-4">
+        <button class="btn custom-btn gap-4" (click)="EditarPerfil()">
             <i class="bi bi-pencil-square"></i>
-            Editar perfil
+            {{ Editar ? 'Cancelar' : 'Editar Perfil' }}
         </button>
       </div>
 
     </div>
   </div>
 </div>
-
-<div class="container d-flex justify-content-center align-items-start mt-4 gap-3">
+@if (!Editar) {
+  <div class="container d-flex justify-content-center align-items-start mt-4 gap-3">
     <div class="container mt-4">
         <div class="card shadow px-5 py-4" style=" margin: 0 auto;">
             <h5 class="card-title mb-3 fw-bold" >Resumen del perfil</h5>
@@ -54,3 +54,10 @@
     </div>
     <br>
 </div>
+}
+
+@if (Editar) {
+  <br>
+  <app-profile-selector></app-profile-selector>
+  <br>
+}
