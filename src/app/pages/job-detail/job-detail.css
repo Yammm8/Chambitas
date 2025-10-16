@@ -1,0 +1,16 @@
+.container {
+  max-width: 1000px;
+}
+
+.badge {
+  font-size: 0.85rem;
+}
+
+.card {
+  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+}
+
+.bg-light {
+  background-color: #f7f7f7 !important;
+}
