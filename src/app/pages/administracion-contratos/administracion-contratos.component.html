@@ -1,85 +1,59 @@
 <div class="contratos-container">
+  <!-- HEADER -->
   <header class="header">
-    <h1>Administración de Contratos</h1>
+    <button class="back-btn" (click)="goBack()">←</button>
+    <h1>Mis Contratos</h1>
+    <button class="search-btn" (click)="buscarMas()">
+      🔍 Buscar más trabajos
+    </button>
   </header>
 
-  <!-- Tarjetas de resumen -->
-  <section class="resumen">
-    <div class="card azul">
-      <div class="icon">📄</div>
-      <h2>4</h2>
+  <!-- CONTADORES -->
+  <section class="stats">
+    <div class="stat-card">
+      <div class="icon blue">📄</div>
+      <h3>{{ totalContratos }}</h3>
       <p>Total</p>
     </div>
-    <div class="card naranja">
-      <div class="icon">⏰</div>
-      <h2>2</h2>
+    <div class="stat-card">
+      <div class="icon orange">🕓</div>
+      <h3>{{ activos }}</h3>
       <p>Activos</p>
     </div>
-    <div class="card verde">
-      <div class="icon">✅</div>
-      <h2>1</h2>
+    <div class="stat-card">
+      <div class="icon green">✅</div>
+      <h3>{{ completados }}</h3>
       <p>Completados</p>
     </div>
-    <div class="card rojo">
-      <div class="icon">❌</div>
-      <h2>0</h2>
+    <div class="stat-card">
+      <div class="icon red">❌</div>
+      <h3>{{ cancelados }}</h3>
       <p>Cancelados</p>
     </div>
   </section>
 
-  <!-- Filtros -->
-  <section class="filtros">
-    <div class="tags">
-      <button class="tag activo">Todos (4)</button>
-      <button class="tag">Activos (2)</button>
-      <button class="tag">Completados (1)</button>
-      <button class="tag">Como Empleador (2)</button>
-      <button class="tag">Como Trabajador (1)</button>
-    </div>
-  </section>
+  <!-- FILTROS -->
+  <div class="filtros">
+    <button (click)="filtrar('todos')" [class.activo]="filtroActual === 'todos'">Todos ({{ totalContratos }})</button>
+    <button (click)="filtrar('activos')" [class.activo]="filtroActual === 'activos'">Activos ({{ activos }})</button>
+    <button (click)="filtrar('completados')" [class.activo]="filtroActual === 'completados'">Completados ({{ completados }})</button>
+    <button (click)="filtrar('cancelados')" [class.activo]="filtroActual === 'cancelados'">Cancelados ({{ cancelados }})</button>
+  </div>
 
-  <!-- Lista de contratos -->
-  <section class="lista">
-    <div class="contrato-card completo">
-      <div class="contrato-info">
-        <h3>Limpieza de Casa Completa</h3>
-        <p class="trabajador">Trabajador: Juan Pérez</p>
-        <p class="detalles">
-          Limpieza · <span class="pago">$50,000</span> · 14/1/2024 - 14/1/2024
-        </p>
-        <p class="fecha">Creado el 12/1/2024</p>
+  <!-- LISTA -->
+  <div class="contratos-list">
+    <div *ngFor="let contrato of contratosFiltrados" class="contrato-card">
+      <div class="card-header">
+        <h2>{{ contrato.titulo }}</h2>
+        <span class="estado" [ngClass]="contrato.estado.toLowerCase()">{{ contrato.estado }}</span>
       </div>
-      <div class="contrato-estado">
-        <span class="estado completo">Completo ✅</span>
-      </div>
+      <p class="detalle">Trabajador: {{ contrato.trabajador }}</p>
+      <p class="detalle">
+        {{ contrato.categoria }} ·
+        <span class="pago">${{ contrato.pago | number }}</span> ·
+        {{ contrato.fechaInicio }} - {{ contrato.fechaFin }}
+      </p>
+      <p class="creado">Creado el {{ contrato.creado }}</p>
     </div>
-
-    <div class="contrato-card activo">
-      <div class="contrato-info">
-        <h3>Cuidado de Perro - Fin de Semana</h3>
-        <p class="trabajador">Por Carlos López</p>
-        <p class="detalles">
-          Cuidado · <span class="pago">$50,000</span> · 19/1/2024 - 20/1/2024
-        </p>
-        <p class="fecha">Creado el 18/1/2024</p>
-      </div>
-      <div class="contrato-estado">
-        <span class="estado activo">Activo ⏰</span>
-      </div>
-    </div>
-
-    <div class="contrato-card activo">
-      <div class="contrato-info">
-        <h3>Ayudante de Cocina - Evento</h3>
-        <p class="trabajador">Trabajador: Ana García</p>
-        <p class="detalles">
-          Cuidado · <span class="pago">$50,000</span> · 19/1/2024 - 20/1/2024
-        </p>
-        <p class="fecha">Creado el 12/1/2024</p>
-      </div>
-      <div class="contrato-estado">
-        <span class="estado activo">Activo ⏰</span>
-      </div>
-    </div>
-  </section>
+  </div>
 </div>
