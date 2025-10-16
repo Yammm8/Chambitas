@@ -1,0 +1,56 @@
+<div class="container mt-4">
+  <h2 class="mb-4 fw-bold">Búsqueda de Trabajos</h2>
+
+  <!-- Filtros -->
+  <div class="card shadow-sm mb-4 p-3">
+    <div class="row g-2 align-items-center">
+      <div class="col-md-4">
+        <input [(ngModel)]="q" name="q" type="text" placeholder="Buscar trabajos..." class="form-control">
+      </div>
+      <div class="col-md-3">
+        <select [(ngModel)]="categoria" name="categoria" class="form-select">
+          <option value="">Todas las categorías</option>
+          <option value="Limpieza">Limpieza</option>
+          <option value="Delivery">Delivery</option>
+          <option value="Cuidado de mascotas">Cuidado de mascotas</option>
+          <option value="Jardinería">Jardinería</option>
+          <option value="Eventos">Eventos</option>
+          <option value="Pintura">Pintura</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select [(ngModel)]="ordenar" name="ordenar" class="form-select">
+          <option value="recientes">Más recientes</option>
+          <option value="pago">Mejor pago</option>
+        </select>
+      </div>
+      <div class="col-md-2 d-flex gap-2">
+        <button (click)="aplicar()" class="btn btn-primary w-50">Aplicar</button>
+        <button (click)="limpiar()" class="btn btn-secondary w-50">Limpiar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conteo de trabajos -->
+  <h5 class="mb-3 text-muted">{{ jobs.length }} trabajos encontrados</h5>
+
+  <!-- Tarjetas -->
+  <div class="row g-4">
+    <div *ngFor="let job of jobs" class="col-md-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title fw-bold">{{ job.titulo }}</h5>
+          <span class="badge bg-light text-dark mb-2">{{ job.categoria }}</span>
+
+          <p class="text-muted small mb-1">{{ job.ubicacion }}</p>
+          <p class="fw-bold text-success">{{ job.pago | currency:'MXN':'symbol-narrow' }}</p>
+          <p class="text-muted small">Publicado: {{ job.fecha | date }}</p>
+
+          <button (click)="verDetalles(job.id)" class="btn btn-dark w-100 mt-2">
+            Ver Detalles
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

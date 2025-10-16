@@ -1,0 +1,21 @@
+<div *ngIf="job" class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h2 class="card-title">{{ job.titulo }}</h2>
+      <h6 class="card-subtitle text-muted mb-3">
+        {{ job.ubicacion }} • {{ job.categoria }}
+      </h6>
+
+      <p class="fw-bold text-success">
+        Pago: {{ job.pago | currency:'MXN':'symbol-narrow' }}
+      </p>
+      <p><strong>Fecha límite:</strong> {{ job.fecha | date }}</p>
+      <p><strong>Empresa:</strong> {{ job.empresa }}</p>
+
+      <hr>
+      <p>{{ job.descripcion }}</p>
+
+      <button class="btn btn-success mt-3">Aplicar</button>
+    </div>
+  </div>
+</div>
