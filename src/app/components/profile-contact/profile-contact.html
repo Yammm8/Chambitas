@@ -3,35 +3,23 @@
   <span class="text-muted">Gestiona tus métodos de contacto</span>
   <hr>
   <div class="mb-4">
-    <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
-      <div>
-        <strong>Teléfono</strong><br>
-        <span class="text-muted">+52 951 123 4567</span>
+    @for (item of contacts; track $index) {
+      <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
+        <div>
+          <strong>{{item.type}}</strong><br>
+          <span class="text-muted">{{item.value}}</span>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-danger">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
       </div>
-      <div class="d-flex gap-2">
-        <button class="btn btn-sm btn-outline-secondary">
-          <i class="bi bi-pencil"></i>
-        </button>
-        <button class="btn btn-sm btn-outline-danger">
-          <i class="bi bi-trash"></i>
-        </button>
-      </div>
-    </div>
+    }
 
-    <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
-      <div>
-        <strong>Correo</strong><br>
-        <span class="text-muted">yamir@example.com</span>
-      </div>
-      <div class="d-flex gap-2">
-        <button class="btn btn-sm btn-outline-secondary">
-          <i class="bi bi-pencil"></i>
-        </button>
-        <button class="btn btn-sm btn-outline-danger">
-          <i class="bi bi-trash"></i>
-        </button>
-      </div>
-    </div>
   </div>
 
   <form>

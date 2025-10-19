@@ -22,7 +22,7 @@ export class JobDetailComponent implements OnInit {
   jobId!: number;
   trabajos: JobDetail[] = [];
 
-  constructor(private route: ActivatedRoute, private jobService: Job) { }
+  constructor(private route: ActivatedRoute, private jobService: Job) { } 
 
   ngOnInit() {
     this.jobId = Number(this.route.snapshot.paramMap.get('id'));

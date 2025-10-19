@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ProfileSelectorComponent } from "../../components/profile-selector/profile-selector";
+import { UserDetail, User } from '../../services/user';
 
 
 @Component({
@@ -8,8 +9,16 @@ import { ProfileSelectorComponent } from "../../components/profile-selector/prof
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
-export class Profile {
+export class Profile implements OnInit{
   Editar : boolean = false;
+  usuario !: UserDetail;
+
+  constructor(private userService: User){}
+
+  ngOnInit(){
+    this.usuario = this.userService.getUsuario();
+  }
+
   EditarPerfil(){
     this.Editar = !this.Editar;
   }

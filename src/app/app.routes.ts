@@ -6,6 +6,7 @@ import { Dashboard } from './pages/dashboard/dashboard';
 import { ProfileLocked } from './pages/profile-locked/profile-locked';
 import { LoginComponent } from './pages/login/login';
 import { RegisterComponent } from './pages/registro/registro';
+import { JobsListComponent } from './pages/jobs-list/jobs-list';
 
 export const routes: Routes = [
     {
@@ -29,6 +30,10 @@ export const routes: Routes = [
         path:'Registro',
         component: RegisterComponent,
         data: { hideNavbar: true }
+    },
+    {
+        path: 'Lista',
+        component: JobsListComponent
     },
     {
         path: 'job-detail/:id',

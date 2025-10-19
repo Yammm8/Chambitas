@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { PreviewJobCard } from "../../components/preview-job-card/preview-job-card";
 import { Job, JobDetail } from '../../services/job';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-home',
-  imports: [PreviewJobCard],
+  imports: [PreviewJobCard, RouterLink],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })

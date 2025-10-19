@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ProfileContact } from '../profile-contact/profile-contact';
 import { ProfileDetails } from '../profile-details/profile-details';
 import { ProfilePersonal } from '../profile-personal/profile-personal';
+import { ContactDetail, User } from '../../services/user';
 
 @Component({
   selector: 'app-profile-selector',
@@ -30,7 +31,7 @@ import { ProfilePersonal } from '../profile-personal/profile-personal';
   <app-profile-details></app-profile-details>
 }
 @if (verInfoContacto) {
-  <app-profile-contact></app-profile-contact>
+  <app-profile-contact [contacts]="contacts"></app-profile-contact>
 }
 
   `,
@@ -58,6 +59,17 @@ import { ProfilePersonal } from '../profile-personal/profile-personal';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileSelectorComponent { 
+
+  contacts: ContactDetail[] = [];
+
+  constructor(private userService: User) {}
+
+  ngOnInit() {
+    const user = this.userService.getUsuario();
+    this.contacts = user.contacts || [];
+  }
+  
+
   verInfoPersonal: boolean = true;
   verInfoDetalles: boolean = false;
   verInfoContacto: boolean = false;
