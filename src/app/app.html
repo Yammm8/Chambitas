@@ -1,1 +1,4 @@
-<router-outlet></router-outlet>
+<header *ngIf="showNavbar">
+  <app-navbar></app-navbar>
+</header>
+<router-outlet />

@@ -1,0 +1,103 @@
+<div class="register-container">
+  <div class="register-card">
+    <i class="bi bi-briefcase-fill fs-3" routerLink="/" style="cursor: pointer;"></i>
+
+    <h2 class="title">Crear Cuenta</h2>
+    <p class="subtitle">
+      Únete a nuestra plataforma de trabajos informales
+    </p>
+
+    <form (ngSubmit)="crearCuenta()" #form="ngForm">
+      <!-- Nombre y Apellido -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="nombre">Nombre</label>
+          <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            [(ngModel)]="nombre"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="apellido">Apellido</label>
+          <input
+            type="text"
+            id="apellido"
+            name="apellido"
+            [(ngModel)]="apellido"
+            required
+          />
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          [(ngModel)]="email"
+          placeholder="tu@email.com"
+          required
+        />
+      </div>
+
+      <!-- Contraseña -->
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <div class="password-wrapper">
+          <input
+            [type]="showPassword1 ? 'text' : 'password'"
+            id="password"
+            name="password"
+            [(ngModel)]="password"
+            required
+          />
+          <button type="button" class="eye-btn" (click)="togglePassword1()">
+            {{ showPassword1 ? '🙈' : '👁️' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Confirmar Contraseña -->
+      <div class="form-group">
+        <label for="confirmPassword">Confirmar Contraseña</label>
+        <div class="password-wrapper">
+          <input
+            [type]="showPassword2 ? 'text' : 'password'"
+            id="confirmPassword"
+            name="confirmPassword"
+            [(ngModel)]="confirmPassword"
+            required
+          />
+          <button type="button" class="eye-btn" (click)="togglePassword2()">
+            {{ showPassword2 ? '🙈' : '👁️' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Términos -->
+      <div class="form-check">
+        <input
+          type="checkbox"
+          id="terminos"
+          [(ngModel)]="aceptarTerminos"
+          name="aceptarTerminos"
+          required
+        />
+        <label for="terminos">Acepto los términos y condiciones</label>
+      </div>
+
+      <!-- Botón -->
+      <button type="submit" class="btn-register">Crear Cuenta</button>
+    </form>
+
+    <p class="login-link">
+      ¿Ya tienes cuenta?
+      <a href="#" class="login-anchor" routerLink="/login">Inicia sesión aquí</a>
+    </p>
+  </div>
+</div>

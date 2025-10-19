@@ -1,0 +1,38 @@
+<div class="container card shadow p-4" style="margin: 0 auto;">
+  <h5 class="fw-bold">Información de contacto</h5>
+  <span class="text-muted">Gestiona tus métodos de contacto</span>
+  <hr>
+  <div class="mb-4">
+    @for (item of contacts; track $index) {
+      <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
+        <div>
+          <strong>{{item.type}}</strong><br>
+          <span class="text-muted">{{item.value}}</span>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-danger">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </div>
+    }
+
+  </div>
+
+  <form>
+    <div class="mb-3">
+      <label for="type" class="form-label">Tipo de contacto</label>
+      <input type="text" class="form-control" id="type" placeholder="Ej: Teléfono, Correo, LinkedIn...">
+    </div>
+
+    <div class="mb-3">
+      <label for="value" class="form-label">Valor</label>
+      <input type="text" class="form-control" id="value" placeholder="Ingresa el valor del contacto">
+    </div>
+
+    <button type="submit" class="btn custom-btn">Agregar contacto</button>
+  </form>
+</div>

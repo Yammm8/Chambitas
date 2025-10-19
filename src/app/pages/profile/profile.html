@@ -1,0 +1,63 @@
+<div class="container mt-5">
+  <div class="card shadow p-3" style=" margin: 0 auto;">
+    <div class="d-flex gap-3 justify-content-between align-items-center mb-2">
+      
+      <div class="me-3 d-flex align-items-center">
+        <img src="https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI=" 
+             class="rounded-circle" 
+             style="width: 120px; height: 120px;" 
+             alt="Avatar">
+        <div>
+            <h5 class="card-title mb-1 fw-bold" style="color: black;">{{usuario.name}} {{usuario.last_name}}</h5>
+            <p class="card-text text-muted mb-0">{{usuario.contacts[0].value}}</p>
+            <br>
+            <span class="badge rounded-pill bg-light text-dark border">
+                0 contactos
+            </span>
+
+        </div>
+      </div>
+
+      <div class="ms-3">
+        <button class="btn custom-btn gap-4" (click)="EditarPerfil()">
+            <i class="bi bi-pencil-square"></i>
+            {{ Editar ? 'Cancelar' : 'Editar Perfil' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+@if (!Editar) {
+  <div class="container d-flex justify-content-center align-items-start mt-4 gap-3">
+    <div class="container mt-4">
+        <div class="card shadow px-5 py-4" style=" margin: 0 auto;">
+            <h5 class="card-title mb-3 fw-bold" >Resumen del perfil</h5>
+            <br>
+            <h6 class="card-subtitle mb-2 text-muted">Nombre Completo</h6>
+            <p class="card-text mb-3" style="color:rgb(143, 143, 143) ">{{usuario.name}} {{usuario.last_name}}</p>
+            <h6 class="card-subtitle mb-2 text-muted">{{usuario.contacts[0].type}}</h6>
+            <p class="card-text mb-3" style="color:rgb(143, 143, 143) ">{{usuario.contacts[0].value}}</p>
+    
+        </div>
+    </div>
+    
+    <div class="container mt-4">
+        <div class="card shadow px-5 py-4" style=" margin: 0 auto;">
+            <h5 class="card-title mb-3 fw-bold">Información de contacto</h5>
+            <div class="d-flex flex-column justify-content-center align-items-center">
+                <i class="bi bi-telephone-plus-fill fs-1 text-muted"></i>
+                <br>
+                <p class="card-text mb-3" style="color:rgb(143, 143, 143) ">No hay información de contacto</p>
+            </div>
+        </div>
+    </div>
+    <br>
+</div>
+}
+
+@if (Editar) {
+  <br>
+  <app-profile-selector></app-profile-selector>
+  <br>
+}
