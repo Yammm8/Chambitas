@@ -4,7 +4,6 @@ import { PublicarTrabajoComponent } from './pages/publicar-trabajo/publicar-trab
 import { SolicitudTrabajoComponent } from './pages/solicitud-trabajo/solicitud-trabajo.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/administracion-contratos', pathMatch: 'full' },
   { path: 'administracion-contratos', component: AdministracionContratosComponent },
   { path: 'publicar-trabajo', component: PublicarTrabajoComponent },
   { path: 'solicitud-trabajo', component: SolicitudTrabajoComponent },
