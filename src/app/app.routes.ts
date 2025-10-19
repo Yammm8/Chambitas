@@ -21,16 +21,18 @@ export const routes: Routes = [
         component: Dashboard
     },
     {
-        path:'job-detail',
-        component: JobDetailComponent
-    },
-    {
         path:'login',
-        component: LoginComponent
+        component: LoginComponent,
+        data: { hideNavbar: true }
     },
     {
         path:'Registro',
-        component: RegisterComponent
+        component: RegisterComponent,
+        data: { hideNavbar: true }
+    },
+    {
+        path: 'job-detail/:id',
+        component: JobDetailComponent
     },
     {
         path: '**',

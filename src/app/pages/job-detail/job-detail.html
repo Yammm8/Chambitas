@@ -1,5 +1,5 @@
 <div class="container mt-4 mb-5">
-  <a routerLink="/jobs" class="text-decoration-none text-muted d-inline-block mb-3">
+  <a class="text-decoration-none text-muted d-inline-block mb-3" routerLink="/home" style="cursor: pointer;">
     ← Volver a Trabajos
   </a>
 
@@ -66,9 +66,9 @@
         <div class="d-flex justify-content-between align-items-center mb-2">
           <span class="fw-bold">💵 {{ job.pago | currency:'MXN':'symbol-narrow' }}</span>
         </div>
-        <button (click)="aplicar()" class="btn btn-dark w-100">Iniciar Sesión para Aplicar</button>
+        <button routerLink="/login" class="btn btn-dark w-100">Iniciar Sesión para Aplicar</button>
         <p class="small text-center mt-2">
-          ¿No tienes cuenta? <a href="#">Regístrate aquí</a>
+          ¿No tienes cuenta? <a routerLink="/Registro">Regístrate aquí</a>
         </p>
       </div>
 

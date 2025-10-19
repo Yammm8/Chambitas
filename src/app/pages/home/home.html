@@ -10,7 +10,7 @@
             <i class="bi bi-search fs-6"></i>
             Buscar trabajos
         </button>
-        <button routerLink="/job-detail" 
+        <button
             class="btn shadow btn-light d-flex gap-3 align-items-center" 
             style="border: 1px solid black;" 
             type="button">
@@ -22,15 +22,12 @@
 </div>
 <div class="container mt-3">
   <div class="row justify-content-center g-3">
-    <div class="col-12 col-sm-6 col-md-4 d-flex">
-      <app-preview-job-card class="flex-fill"></app-preview-job-card>
-    </div>
-    <div class="col-12 col-sm-6 col-md-4 d-flex">
-      <app-preview-job-card class="flex-fill"></app-preview-job-card>
-    </div>
-    <div class="col-12 col-sm-6 col-md-4 d-flex">
-      <app-preview-job-card class="flex-fill"></app-preview-job-card>
-    </div>
+    @for (item of trabajos; track $index) {
+      <div class="col-12 col-sm-6 col-md-4 d-flex">
+        <app-preview-job-card [job]="item" class="flex-fill"></app-preview-job-card>
+      </div>
+    }
+    
   </div>
 </div>
 <br>
