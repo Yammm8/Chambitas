@@ -1,1 +1,77 @@
-<p>editar-trabajo works!</p>
+<div class="container my-5">
+    <button class="btn btn-outline-secondary mb-4 d-flex align-items-center" (click)="goBack()">
+        <i class="bi bi-arrow-left me-2"></i>
+        Volver
+    </button>
+
+    <div class="card shadow-lg border-0">
+        <div class="card-body p-5">
+            <h3 class="fw-bold mb-4 text-center">Editar publicación</h3>
+
+            <form>
+                <div class="mb-3">
+                    <label for="title" class="form-label fw-semibold">Título</label>
+                    <input type="text" id="title" name="title" [(ngModel)]="post.title" class="form-control"
+                        placeholder="Ej. Desarrollador Full Stack" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="body" class="form-label fw-semibold">Descripción</label>
+                    <textarea id="body" name="body" [(ngModel)]="post.body" class="form-control" rows="4"
+                        placeholder="Describe el trabajo o proyecto..." required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="status" class="form-label fw-semibold">Estado</label>
+                    <select id="status" name="status" [(ngModel)]="post.status" class="form-select">
+                        <option [ngValue]="true">Activo</option>
+                        <option [ngValue]="false">Inactivo</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="pay" class="form-label fw-semibold">Pago (MXN)</label>
+                    <input type="number" id="pay" name="pay" [(ngModel)]="post.pay" class="form-control" step="0.01"
+                        placeholder="Ej. 2500.00" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="createdAt" class="form-label fw-semibold">Fecha de publicación</label>
+                    <input type="datetime-local" id="createdAt" name="createdAt" [(ngModel)]="post.createdAt"
+                        class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="deadline" class="form-label fw-semibold">Fecha límite</label>
+                    <input type="date" id="deadline" name="deadline" [(ngModel)]="post.deadline" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="location" class="form-label fw-semibold">Ubicación</label>
+                    <input type="text" id="location" name="location" [(ngModel)]="post.location" class="form-control"
+                        placeholder="Ej. Guadalajara, Jalisco" />
+                </div>
+
+                <div class="mb-4">
+                    <label for="category" class="form-label fw-semibold">Categoría</label>
+                    <select id="category" name="category" [(ngModel)]="selectedCategory" class="form-select">
+                        @for (cat of categories; track $index) {
+                        <option [ngValue]="cat.id">
+                            {{ cat.name }}
+                        </option>
+                        }
+
+                    </select>
+                </div>
+
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary px-5">
+                        <i class="bi bi-save me-2"></i>
+                        Guardar cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

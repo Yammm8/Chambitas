@@ -11,6 +11,7 @@ import { AdministracionContratosComponent } from './pages/administracion-contrat
 import { PublicarTrabajoComponent } from './pages/publicar-trabajo/publicar-trabajo.component';
 import { SolicitudTrabajoComponent } from './pages/solicitud-trabajo/solicitud-trabajo.component';
 import { VerPerfilComponent } from './pages/ver-perfil/ver-perfil';
+import { EditarTrabajoComponent } from './pages/editar-trabajo/editar-trabajo';
 
 export const routes: Routes = [
   {
@@ -40,15 +41,19 @@ export const routes: Routes = [
     component: JobsListComponent,
   },
   {
-  path: 'job-detail/:id',
+    path: 'job-detail/:id',
     component: JobDetailComponent,
+  },
+  {
+    path: 'editarTrabajo/:postId',
+    component: EditarTrabajoComponent,
   },
   { path: 'administracion-contratos', component: AdministracionContratosComponent },
   { path: 'publicar-trabajo', component: PublicarTrabajoComponent },
   { path: 'solicitud-trabajo', component: SolicitudTrabajoComponent },
   {
-    path:"verPerfil/:userId",
-    component: VerPerfilComponent
+    path: 'verPerfil/:userId',
+    component: VerPerfilComponent,
   },
   {
     path: '**',
