@@ -1,11 +1,9 @@
 <div class="contenedor">
-  <!-- 🧠 Encabezado -->
   <header class="header">
     <h1 class="titulo">Solicitudes de Trabajo</h1>
-    <button class="btn-negro">Buscar Más Trabajos</button>
+    <button class="btn-negro" routerLink="/Lista">Buscar Más Trabajos</button>
   </header>
 
-  <!-- 📊 Tarjetas de estadísticas -->
   <div class="estadisticas">
     <div class="caja total">
       <div class="icon icon-total"></div>
@@ -32,22 +30,16 @@
     </div>
   </div>
 
-  <!-- 🧭 Filtros -->
   <div class="barra-filtros">
     <div class="filtros">
-      <button
-        *ngFor="let f of filtros"
-        (click)="cambiarFiltro(f)"
-        [ngClass]="{ activo: filtroActual === f }"
-      >
+      <button *ngFor="let f of filtros" (click)="cambiarFiltro(f)" [ngClass]="{ activo: filtroActual === f }">
         {{ f }}
       </button>
     </div>
 
-    <button class="btn-negro btn-mini">Ver Contratos</button>
+    <button class="btn-negro btn-mini" routerLink="/administracion-contratos">Ver Contratos</button>
   </div>
 
-  <!-- 💼 Tarjetas -->
   <div class="cards">
     <div *ngFor="let s of solicitudesFiltradas" class="card">
       <div class="info-trabajo">

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from "@angular/router";
 
 interface Solicitud {
   titulo: string;
@@ -14,7 +15,7 @@ interface Solicitud {
 @Component({
   selector: 'app-solicitud-trabajo',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './solicitud-trabajo.component.html',
   styleUrls: ['./solicitud-trabajo.component.css']
 })
