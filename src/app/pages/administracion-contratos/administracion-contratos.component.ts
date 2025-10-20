@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-administracion-contratos',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './administracion-contratos.component.html',
   styleUrls: ['./administracion-contratos.component.css']
 })
@@ -62,7 +63,7 @@ export class AdministracionContratosComponent {
       }
     ];
 
-    // 👇 Esto rellena correctamente los contadores y la lista inicial
+
     this.actualizarContadores();
     this.contratosFiltrados = [...this.contratos];
   }
@@ -91,9 +92,10 @@ export class AdministracionContratosComponent {
         break;
     }
   }
+  constructor(private location: Location) {}
 
   goBack() {
-    console.log('Volver al dashboard');
+    this.location.back();
   }
 
   buscarMas() {

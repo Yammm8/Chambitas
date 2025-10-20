@@ -1,59 +1,139 @@
-<div class="contratos-container">
+<div class="container py-5">
   <!-- HEADER -->
-  <header class="header">
-    <button class="back-btn" (click)="goBack()">←</button>
-    <h1>Mis Contratos</h1>
-    <button class="search-btn" (click)="buscarMas()">
-      🔍 Buscar más trabajos
+  <div class="d-flex justify-content-between align-items-center mb-5">
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-outline-dark btn-sm rounded-circle" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <h1 class="fw-bold mb-0">Mis Contratos</h1>
+    </div>
+
+    <button class="btn btn-primary d-flex align-items-center gap-2" routerLink="/Lista">
+      <i class="bi bi-search"></i>
+      Buscar más trabajos
     </button>
-  </header>
-
-  <!-- CONTADORES -->
-  <section class="stats">
-    <div class="stat-card">
-      <div class="icon blue">📄</div>
-      <h3>{{ totalContratos }}</h3>
-      <p>Total</p>
-    </div>
-    <div class="stat-card">
-      <div class="icon orange">🕓</div>
-      <h3>{{ activos }}</h3>
-      <p>Activos</p>
-    </div>
-    <div class="stat-card">
-      <div class="icon green">✅</div>
-      <h3>{{ completados }}</h3>
-      <p>Completados</p>
-    </div>
-    <div class="stat-card">
-      <div class="icon red">❌</div>
-      <h3>{{ cancelados }}</h3>
-      <p>Cancelados</p>
-    </div>
-  </section>
-
-  <!-- FILTROS -->
-  <div class="filtros">
-    <button (click)="filtrar('todos')" [class.activo]="filtroActual === 'todos'">Todos ({{ totalContratos }})</button>
-    <button (click)="filtrar('activos')" [class.activo]="filtroActual === 'activos'">Activos ({{ activos }})</button>
-    <button (click)="filtrar('completados')" [class.activo]="filtroActual === 'completados'">Completados ({{ completados }})</button>
-    <button (click)="filtrar('cancelados')" [class.activo]="filtroActual === 'cancelados'">Cancelados ({{ cancelados }})</button>
   </div>
 
-  <!-- LISTA -->
-  <div class="contratos-list">
-    <div *ngFor="let contrato of contratosFiltrados" class="contrato-card">
-      <div class="card-header">
-        <h2>{{ contrato.titulo }}</h2>
-        <span class="estado" [ngClass]="contrato.estado.toLowerCase()">{{ contrato.estado }}</span>
+  <!-- CONTADORES -->
+  <div class="row g-4 mb-5 text-center">
+    <div class="col-6 col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <div
+            class="bg-primary text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+            style="width: 50px; height: 50px;"
+          >
+            <i class="bi bi-file-earmark-text"></i>
+          </div>
+          <h3 class="fw-bold mb-0">{{ totalContratos }}</h3>
+          <small class="text-muted">Total</small>
+        </div>
       </div>
-      <p class="detalle">Trabajador: {{ contrato.trabajador }}</p>
-      <p class="detalle">
-        {{ contrato.categoria }} ·
-        <span class="pago">${{ contrato.pago | number }}</span> ·
-        {{ contrato.fechaInicio }} - {{ contrato.fechaFin }}
-      </p>
-      <p class="creado">Creado el {{ contrato.creado }}</p>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <div
+            class="bg-warning text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+            style="width: 50px; height: 50px;"
+          >
+            <i class="bi bi-hourglass-split"></i>
+          </div>
+          <h3 class="fw-bold mb-0">{{ activos }}</h3>
+          <small class="text-muted">Activos</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <div
+            class="bg-success text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+            style="width: 50px; height: 50px;"
+          >
+            <i class="bi bi-check-circle"></i>
+          </div>
+          <h3 class="fw-bold mb-0">{{ completados }}</h3>
+          <small class="text-muted">Completados</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <div
+            class="bg-danger text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+            style="width: 50px; height: 50px;"
+          >
+            <i class="bi bi-x-circle"></i>
+          </div>
+          <h3 class="fw-bold mb-0">{{ cancelados }}</h3>
+          <small class="text-muted">Cancelados</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+    <button
+      class="btn"
+      *ngFor="let f of ['todos','activos','completados','cancelados']"
+      (click)="filtrar(f)"
+      [ngClass]="{
+        'btn-dark text-white': filtroActual === f,
+        'btn-outline-secondary': filtroActual !== f
+      }"
+    >
+      {{ f | titlecase }}
+      
+    </button>
+  </div>
+
+  <!-- LISTA DE CONTRATOS -->
+  <div class="row gy-4">
+    <div *ngFor="let contrato of contratosFiltrados" class="col-12 col-lg-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="fw-bold mb-0">{{ contrato.titulo }}</h5>
+            <span
+              class="badge px-3 py-2 text-uppercase"
+              [ngClass]="{
+                'bg-primary': contrato.estado === 'Activo',
+                'bg-success': contrato.estado === 'Completado',
+                'bg-danger': contrato.estado === 'Cancelado'
+              }"
+            >
+              {{ contrato.estado }}
+            </span>
+          </div>
+
+          <p class="text-muted mb-1">
+            <i class="bi bi-person-circle me-1"></i>
+            Trabajador: {{ contrato.trabajador }}
+          </p>
+
+          <p class="text-muted small mb-2">
+            <i class="bi bi-briefcase-fill me-1"></i>
+            {{ contrato.categoria }} ·
+            <span class="fw-bold text-success">${{ contrato.pago | number }}</span>
+          </p>
+
+          <p class="text-secondary small mb-2">
+            <i class="bi bi-calendar-event me-1"></i>
+            {{ contrato.fechaInicio }} - {{ contrato.fechaFin }}
+          </p>
+
+          <p class="text-secondary small">
+            <i class="bi bi-clock-history me-1"></i>
+            Creado el {{ contrato.creado }}
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
