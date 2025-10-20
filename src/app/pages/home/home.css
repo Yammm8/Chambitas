@@ -1,5 +1,18 @@
-p{
-    color:gray;
-    font-weight: 600;
+.hero-section {
+  background: url('/worksHero.png') center/cover no-repeat;
+  min-height: 50vh;
+}
+.btn-outline-dark:hover {
+  background-color: #ff7a00;
+  color: #fff;
+  border-color: #ff7a00;
 }
 
+.btn-dark:hover {
+  background-color: #ff7a00;
+  border-color: #ff7a00;
+}
+
+button {
+  transition: all 0.2s ease-in-out;
+}

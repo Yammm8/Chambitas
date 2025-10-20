@@ -54,6 +54,42 @@ export class Job {
       fechaLimite: '2025-10-30',
       empleador: 'Tienda Online 123',
       miembroDesde: '2023'
+    },
+    {
+      id: 3,
+      titulo: 'Asistente Virtual para E-commerce',
+      categoria: 'Administrativo', 
+      ubicacion: 'Remoto',
+      descripcion: 'Se necesita asistente virtual para manejo de pedidos y atención al cliente.',
+      pago: 4000,
+      fechaPublicacion: '2025-10-10',
+      fechaLimite: '2025-10-30',
+      empleador: 'Tienda Online 123',
+      miembroDesde: '2023'
+    },
+    {
+      id: 3,
+      titulo: 'Asistente Virtual para E-commerce',
+      categoria: 'Administrativo', 
+      ubicacion: 'Remoto',
+      descripcion: 'Se necesita asistente virtual para manejo de pedidos y atención al cliente.',
+      pago: 4000,
+      fechaPublicacion: '2025-10-10',
+      fechaLimite: '2025-10-30',
+      empleador: 'Tienda Online 123',
+      miembroDesde: '2023'
+    },
+    {
+      id: 3,
+      titulo: 'Asistente Virtual para E-commerce',
+      categoria: 'Administrativo', 
+      ubicacion: 'Remoto',
+      descripcion: 'Se necesita asistente virtual para manejo de pedidos y atención al cliente.',
+      pago: 4000,
+      fechaPublicacion: '2025-10-10',
+      fechaLimite: '2025-10-30',
+      empleador: 'Tienda Online 123',
+      miembroDesde: '2023'
     }
   ];
   getTrabajos(): JobDetail[] {
