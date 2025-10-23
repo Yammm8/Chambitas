@@ -5,73 +5,127 @@
     </button>
 
     <div class="card shadow-lg border-0">
-        <div class="card-body p-5">
-            <h3 class="fw-bold mb-4 text-center">Editar publicación</h3>
+        <div class="card-body p-4 p-md-5">
 
-            <form>
-                <div class="mb-3">
-                    <label for="title" class="form-label fw-semibold">Título</label>
-                    <input type="text" id="title" name="title" [(ngModel)]="post.title" class="form-control"
-                        placeholder="Ej. Desarrollador Full Stack" required />
-                </div>
+            <h3 class="fw-bold mb-4 text-center">Administrar publicación</h3>
 
-                <div class="mb-3">
-                    <label for="body" class="form-label fw-semibold">Descripción</label>
-                    <textarea id="body" name="body" [(ngModel)]="post.body" class="form-control" rows="4"
-                        placeholder="Describe el trabajo o proyecto..." required></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label for="status" class="form-label fw-semibold">Estado</label>
-                    <select id="status" name="status" [(ngModel)]="post.status" class="form-select">
-                        <option [ngValue]="true">Activo</option>
-                        <option [ngValue]="false">Inactivo</option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label for="pay" class="form-label fw-semibold">Pago (MXN)</label>
-                    <input type="number" id="pay" name="pay" [(ngModel)]="post.pay" class="form-control" step="0.01"
-                        placeholder="Ej. 2500.00" required />
-                </div>
-
-                <div class="mb-3">
-                    <label for="createdAt" class="form-label fw-semibold">Fecha de publicación</label>
-                    <input type="datetime-local" id="createdAt" name="createdAt" [(ngModel)]="post.createdAt"
-                        class="form-control" required />
-                </div>
-
-                <div class="mb-3">
-                    <label for="deadline" class="form-label fw-semibold">Fecha límite</label>
-                    <input type="date" id="deadline" name="deadline" [(ngModel)]="post.deadline" class="form-control" />
-                </div>
-
-                <div class="mb-3">
-                    <label for="location" class="form-label fw-semibold">Ubicación</label>
-                    <input type="text" id="location" name="location" [(ngModel)]="post.location" class="form-control"
-                        placeholder="Ej. Guadalajara, Jalisco" />
-                </div>
-
-                <div class="mb-4">
-                    <label for="category" class="form-label fw-semibold">Categoría</label>
-                    <select id="category" name="category" [(ngModel)]="selectedCategory" class="form-select">
-                        @for (cat of categories; track $index) {
-                        <option [ngValue]="cat.id">
-                            {{ cat.name }}
-                        </option>
-                        }
-
-                    </select>
-                </div>
-
-
-                <div class="text-center">
-                    <button type="submit" class="btn btn-dark px-5">
-                        <i class="bi bi-save me-2"></i>
-                        Guardar cambios
+            <ul class="nav nav-tabs justify-content-center mb-4">
+                <li class="nav-item">
+                    <button class="nav-link" [class.active]="tab === 'editar'" (click)="tab = 'editar'">
+                        <i class="bi bi-pencil-square me-2"></i>Editar trabajo
                     </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" [class.active]="tab === 'solicitudes'" (click)="tab = 'solicitudes'">
+                        <i class="bi bi-people me-2"></i>Solicitudes
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" [class.active]="tab === 'contratos'" (click)="tab = 'contratos'">
+                        <i class="bi bi-file-earmark-text me-2"></i>Contratos
+                    </button>
+                </li>
+            </ul>
+
+            <div *ngIf="tab === 'editar'">
+                <form>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Título</label>
+                            <input type="text" [(ngModel)]="post.title" name="title" class="form-control"
+                                placeholder="Ej. Desarrollador Full Stack" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Pago (MXN)</label>
+                            <input type="number" [(ngModel)]="post.pay" name="pay" class="form-control" step="0.01"
+                                placeholder="Ej. 2500.00" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Descripción</label>
+                        <textarea [(ngModel)]="post.body" name="body" class="form-control" rows="4"
+                            placeholder="Describe el trabajo o proyecto..."></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold">Estado</label>
+                            <select [(ngModel)]="post.status" name="status" class="form-select">
+                                <option [ngValue]="true">Activo</option>
+                                <option [ngValue]="false">Inactivo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold">Fecha límite</label>
+                            <input type="date" [(ngModel)]="post.deadline" name="deadline" class="form-control" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold">Ubicación</label>
+                            <input type="text" [(ngModel)]="post.location" name="location" class="form-control"
+                                placeholder="Ej. Guadalajara, Jalisco" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Categoría</label>
+                        <select [(ngModel)]="selectedCategory" name="category" class="form-select">
+                            @for (cat of categories; track $index) {
+                            <option [ngValue]="cat.id">{{ cat.name }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-dark px-5">
+                            <i class="bi bi-save me-2"></i>Guardar cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div *ngIf="tab === 'solicitudes'">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0">Solicitudes para este trabajo</h5>
+                    <span class="badge bg-dark">{{ solicitudes.length }} solicitudes</span>
                 </div>
-            </form>
+
+                <div *ngIf="solicitudes.length === 0" class="text-center text-muted py-4">
+                    <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                    No hay solicitudes aún.
+                </div>
+
+                <div class="row gy-3" *ngIf="solicitudes.length > 0">
+                    @for (s of solicitudes; track $index){
+                    <div class="col-12 col-md-6">
+                        <app-card-item [item]="getItemSolicitud(s)" (estadoCambiado)="onEstadoSolicitud($event)">
+                        </app-card-item>
+                    </div>}
+
+                </div>
+            </div>
+
+            <div *ngIf="tab === 'contratos'">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0">Contratos asociados</h5>
+                    <span class="badge bg-dark">{{ contratos.length }} contratos</span>
+                </div>
+
+                <div *ngIf="contratos.length === 0" class="text-center text-muted py-4">
+                    <i class="bi bi-briefcase fs-3 d-block mb-2"></i>
+                    No hay contratos asociados a este trabajo.
+                </div>
+
+                <div class="row gy-3" *ngIf="contratos.length > 0">
+                    @for ( c of contratos; track $index){
+                    <div class="col-12 col-md-6">
+                        <app-card-item [item]="getItemContrato(c)" (estadoCambiado)="onEstadoContrato($event)">
+                            </app-card-item>
+                    </div>}
+
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

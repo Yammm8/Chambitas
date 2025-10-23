@@ -1,0 +1,47 @@
+<form (ngSubmit)="guardarCambios()" class="card shadow-sm border-0 h-100">
+  <div class="card-body d-flex flex-column justify-content-between">
+
+    <div>
+      <h6 class="fw-bold mb-1">{{ item.titulo }}</h6>
+
+      <p *ngIf="item.tipo === 'solicitud'" class="text-muted small mb-1">
+        Por {{ item.nombre }} · {{ item.ubicacion }}
+      </p>
+
+      <p *ngIf="item.tipo === 'contrato'" class="text-muted small mb-1">
+        Trabajador: {{ item.trabajador }}
+      </p>
+
+      <p class="text-muted small mb-2" *ngIf="item.categoria || item.pago">
+        {{ item.categoria }}
+        <span *ngIf="item.pago" class="fw-bold text-success"> · ${{ item.pago | number }}</span>
+      </p>
+
+      <p class="text-secondary small mb-2" *ngIf="item.tipo === 'solicitud' && item.fecha">
+        Aplicado el {{ item.fecha }}
+      </p>
+
+      <p class="text-secondary small mb-2" *ngIf="item.tipo === 'contrato' && item.fechaInicio && item.fechaFin">
+        {{ item.fechaInicio }} - {{ item.fechaFin }}
+      </p>
+    </div>
+
+    <div class="mt-2 d-flex flex-column gap-2">
+      <select class="form-select" [(ngModel)]="item.estado" name="estado">
+        <option *ngFor="let op of opcionesEstado" [value]="op">{{ op }}</option>
+      </select>
+
+      <button type="submit" class="btn"
+        [ngClass]="{
+          'btn-warning': item.estado === 'Pendiente',
+          'btn-success': item.estado === 'Aceptada' || item.estado === 'Completado',
+          'btn-danger': item.estado === 'Rechazada' || item.estado === 'Cancelado',
+          'btn-primary': item.estado === 'Activo'
+        }"
+      >
+        Guardar cambios
+      </button>
+    </div>
+
+  </div>
+</form>
