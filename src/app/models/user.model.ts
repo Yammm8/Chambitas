@@ -6,4 +6,5 @@ interface User {
   description: string;
   address: string;
   birthday: string;
+  contacts?: Contact[];
 }

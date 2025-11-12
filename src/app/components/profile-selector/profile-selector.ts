@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ProfileContact } from '../profile-contact/profile-contact';
 import { ProfileDetails } from '../profile-details/profile-details';
 import { ProfilePersonal } from '../profile-personal/profile-personal';
-import { ContactDetail, User } from '../../services/user';
+import { userService } from '../../services/user.service';
 
 @Component({
   selector: 'app-profile-selector',
@@ -60,13 +60,15 @@ import { ContactDetail, User } from '../../services/user';
 })
 export class ProfileSelectorComponent { 
 
-  contacts: ContactDetail[] = [];
+  contacts: Contact[] = [];
+  user: User | null = null;
 
-  constructor(private userService: User) {}
+
+  constructor(private userService: userService) {}
 
   ngOnInit() {
-    const user = this.userService.getUsuario();
-    this.contacts = user.contacts || [];
+    this.user = this.userService.getUsuario();
+    this.contacts = this.user?.contacts || [];
   }
   
 

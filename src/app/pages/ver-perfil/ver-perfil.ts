@@ -19,8 +19,8 @@ export class VerPerfilComponent {
   };
 
   contacts: Contact[] = [
-    { id: 1, value: 'diego@example.com' },
-    { id: 2, value: '+52 555 123 4567' },
+    { id: 1, contactMeansId: 1, userId: this.user.id, value: 'diego@example.com' },
+    { id: 2, contactMeansId: 2, userId: this.user.id, value: '+52 555 123 4567' },
   ];
 
   posts: Post[] = [

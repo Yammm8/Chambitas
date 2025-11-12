@@ -3,6 +3,7 @@ import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common'; // 👈 
 import { ActivatedRoute } from '@angular/router';
 import { Job, JobDetail } from '../../services/job';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-job-detail',
@@ -21,8 +22,11 @@ export class JobDetailComponent implements OnInit {
   job!: JobDetail;
   jobId!: number;
   trabajos: JobDetail[] = [];
+  loggedIn: boolean = false;
 
-  constructor(private route: ActivatedRoute, private jobService: Job) { } 
+  constructor(private route: ActivatedRoute, private jobService: Job, private authService : AuthService) { 
+    this.loggedIn= this.authService.isLoggedIn()
+  } 
 
   ngOnInit() {
     this.jobId = Number(this.route.snapshot.paramMap.get('id'));

@@ -66,10 +66,16 @@
         <div class="d-flex justify-content-between align-items-center mb-2">
           <span class="fw-bold">💵 {{ job.pago | currency:'MXN':'symbol-narrow' }}</span>
         </div>
-        <button routerLink="/login" class="btn btn-dark w-100">Iniciar Sesión para Aplicar</button>
-        <p class="small text-center mt-2">
-          ¿No tienes cuenta? <a routerLink="/Registro">Regístrate aquí</a>
-        </p>
+        @if (this.loggedIn == false) {
+          <button routerLink="/login" class="btn btn-dark w-100">Iniciar Sesión para Aplicar</button>
+          <p class="small text-center mt-2">
+            ¿No tienes cuenta? <a routerLink="/Registro">Regístrate aquí</a>
+          </p>
+        }
+        @else {
+          <button class="btn btn-dark w-100" (click)="aplicar()">Aplicar Ahora</button>
+        }
+        
       </div>
 
       <div class="card p-3">
