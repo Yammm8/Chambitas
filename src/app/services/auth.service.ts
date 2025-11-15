@@ -25,9 +25,11 @@ export class AuthService {
 
 
   logout() {
-    this.userService.clearUsuario();
-    this.router.navigate(['/login']);
+  return this.http.post(`${this.baseUrl}/auth/logout`, {}, { 
+    withCredentials: true, responseType: 'text'
+  });
   }
+
 
   register(payload: UserDetail): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/auth/create-account`, payload);
