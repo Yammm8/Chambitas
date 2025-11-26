@@ -48,9 +48,18 @@ export const routes: Routes = [
     path: 'editarTrabajo/:postId',
     component: EditarTrabajoComponent,
   },
-  { path: 'administracion-contratos', component: AdministracionContratosComponent },
-  { path: 'publicar-trabajo', component: PublicarTrabajoComponent },
-  { path: 'solicitud-trabajo', component: SolicitudTrabajoComponent },
+  {
+    path: 'administracion-contratos',
+    component: AdministracionContratosComponent,
+  },
+  {
+    path: 'publicar-trabajo',
+    component: PublicarTrabajoComponent,
+  },
+  {
+    path: 'solicitud-trabajo',
+    component: SolicitudTrabajoComponent,
+  },
   {
     path: 'verPerfil/:userId',
     component: VerPerfilComponent,

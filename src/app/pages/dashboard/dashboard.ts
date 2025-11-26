@@ -1,37 +1,33 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DashboardCardComponent } from '../../components/dashboard-card/dashboard-card';
-import { RouterLink } from "@angular/router";
+import { RouterLink } from '@angular/router';
+import { PostService, Post } from '../../services/post.service';
 
 @Component({
   selector: 'app-dashboard',
+  // si ya te compilaba antes, déjalo así;
+  // si en algún momento se queja Angular, agregamos standalone: true
   imports: [DashboardCardComponent, RouterLink],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css'
+  styleUrl: './dashboard.css',
 })
-export class Dashboard {
-  posts: Post[] = [
-    {
-    id: 1,
-    title: 'Desarrollador Frontend Angular',
-    body: 'Se busca desarrollador con experiencia en Angular y Bootstrap 5.',
-    status: true,
-    user_id: 1,
-    createdAt: '2025-10-19T10:00',
-    pay: 5000.0,
-    deadline: '2025-11-01',
-    location: 'Monterrey, Nuevo León',
-  },
-    {
-    id: 2,
-    title: 'Desarrollador Frontend React',
-    body: 'Se busca desarrollador con experiencia en react y tailwind 4.',
-    status: true,
-    user_id: 1,
-    createdAt: '2025-10-19T10:00',
-    pay: 5000.0,
-    deadline: '2025-11-01',
-    location: 'Monterrey, Nuevo León',
-  },
-  ];
+export class Dashboard implements OnInit {
+  posts: Post[] = [];
 
+  constructor(private postService: PostService) {}
+
+  ngOnInit(): void {
+    this.loadPosts();
+  }
+
+  loadPosts(): void {
+    this.postService.getPosts().subscribe({
+      next: (res: Post[]) => {
+        this.posts = res;
+      },
+      error: (err: unknown) => {
+        console.error('Error al cargar trabajos:', err);
+      },
+    });
+  }
 }

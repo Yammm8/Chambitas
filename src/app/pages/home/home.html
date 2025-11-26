@@ -11,12 +11,17 @@
     </p>
     <br>
     <div class="d-flex gap-3 justify-content-center flex-wrap">
-      <button class="btn btn-outline-dark btn-dark custom-btn d-flex gap-3 align-items-center" type="button" routerLink="/Lista">
+      <button
+        class="btn btn-outline-dark btn-dark custom-btn d-flex gap-3 align-items-center"
+        type="button"
+        routerLink="/Lista">
         <i class="bi bi-search fs-6"></i>
         Buscar trabajos
       </button>
-      <button class="btn btn-outline-dark shadow btn-light d-flex gap-3 align-items-center" 
-        type="button" routerLink="/publicar-trabajo">
+      <button
+        class="btn btn-outline-dark shadow btn-light d-flex gap-3 align-items-center"
+        type="button"
+        routerLink="/publicar-trabajo">
         Publicar Trabajo
       </button>
     </div>
@@ -26,9 +31,9 @@
 <div class="container mt-3">
   <div class="row justify-content-center g-3">
     @for (item of trabajos; track $index) {
-    <div class="col-12 col-sm-6 col-md-4 d-flex">
-      <app-preview-job-card [job]="item" class="flex-fill"></app-preview-job-card>
-    </div>
+      <div class="col-12 col-sm-6 col-md-4 d-flex">
+        <app-preview-job-card [job]="item" class="flex-fill"></app-preview-job-card>
+      </div>
     }
   </div>
 </div>
@@ -36,7 +41,9 @@
 <br><br>
 
 <div class="d-flex justify-content-center">
-  <button class="btn shadow btn-light d-flex gap-3 align-items-center btn-outline-dark" type="button"
+  <button
+    class="btn shadow btn-light d-flex gap-3 align-items-center btn-outline-dark"
+    type="button"
     routerLink="/Lista">
     Ver todos los trabajos
   </button>

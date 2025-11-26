@@ -1,70 +1,144 @@
 import { Component } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
-import { RouterLink } from "@angular/router";
+import { RouterLink } from '@angular/router';
+import {
+  ContratosService,
+  UiContract,
+  EstadoContrato,
+} from '../../services/contratos.service';
 
 @Component({
   selector: 'app-administracion-contratos',
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './administracion-contratos.component.html',
-  styleUrls: ['./administracion-contratos.component.css']
+  styleUrls: ['./administracion-contratos.component.css'],
 })
 export class AdministracionContratosComponent {
-  contratos: any[] = [];
-  contratosFiltrados: any[] = [];
-  filtroActual = 'todos';
+  contratos: UiContract[] = [];
+  contratosFiltrados: UiContract[] = [];
 
-  stats: any[] = [];
-  filtros = ['todos', 'activos', 'completados', 'cancelados'];
+  /**  🔥 Cambiado a string para que NO genere error con el HTML */
+  filtroActual: string = 'todos';
+
+  stats: { label: string; count: number; icon: string; bgClass: string }[] = [];
+  filtros: string[] = ['todos', 'activos', 'completados', 'cancelados'];
+
+  loading = false;
+  error = '';
+
+  constructor(
+    private location: Location,
+    private contratosService: ContratosService
+  ) {}
 
   ngOnInit() {
-    this.contratos = [
-      { titulo: 'Limpieza de Casa completa', trabajador: 'Juan Pérez', categoria: 'Limpieza', pago: 50000, fechaInicio: '14/1/2024', fechaFin: '14/1/2024', creado: '12/1/2024', estado: 'Completado' },
-      { titulo: 'Cuidado de Perro - Fin de Semana', trabajador: 'Carlos López', categoria: 'Cuidado', pago: 40000, fechaInicio: '19/1/2024', fechaFin: '20/1/2024', creado: '18/1/2024', estado: 'Activo' },
-      { titulo: 'Ayudante de Cocina - Evento', trabajador: 'Ana García', categoria: 'Cocina', pago: 50000, fechaInicio: '19/1/2024', fechaFin: '20/1/2024', creado: '12/1/2024', estado: 'Activo' },
-      { titulo: 'Jardinería y Poda', trabajador: 'Pedro Ramos', categoria: 'Jardinería', pago: 30000, fechaInicio: '8/1/2024', fechaFin: '9/1/2024', creado: '5/1/2024', estado: 'Cancelado' }
-    ];
+    this.cargarContratos();
+  }
 
-    this.actualizarStats();
-    this.contratosFiltrados = [...this.contratos];
+  goBack() {
+    this.location.back();
+  }
+
+  /** Cargar contratos del backend (como TRABAJADOR) */
+  cargarContratos() {
+    this.loading = true;
+    this.error = '';
+
+    this.contratosService.getContractsAsWorker().subscribe({
+      next: (raw) => {
+        // 1) mapear a modelo de la UI
+        this.contratos = this.contratosService.mapRawToUi(raw);
+
+        // 2) aplicar filtro actual y actualizar estadísticas
+        this.filtrar(this.filtroActual, false);
+        this.actualizarStats();
+
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.error = 'No se pudieron cargar los contratos.';
+        this.loading = false;
+      },
+    });
   }
 
   actualizarStats() {
     const total = this.contratos.length;
-    const activos = this.contratos.filter(c => c.estado === 'Activo').length;
-    const completados = this.contratos.filter(c => c.estado === 'Completado').length;
-    const cancelados = this.contratos.filter(c => c.estado === 'Cancelado').length;
+    const activos = this.contratos.filter((c) => c.estado === 'Activo').length;
+    const completados = this.contratos.filter(
+      (c) => c.estado === 'Completado'
+    ).length;
+    const cancelados = this.contratos.filter(
+      (c) => c.estado === 'Cancelado'
+    ).length;
 
     this.stats = [
-      { label: 'Total', count: total, icon: 'bi bi-file-earmark-text', bgClass: 'bg-primary text-white' },
-      { label: 'Activos', count: activos, icon: 'bi bi-hourglass-split', bgClass: 'bg-warning text-white' },
-      { label: 'Completados', count: completados, icon: 'bi bi-check-circle', bgClass: 'bg-success text-white' },
-      { label: 'Cancelados', count: cancelados, icon: 'bi bi-x-circle', bgClass: 'bg-danger text-white' }
+      {
+        label: 'Total',
+        count: total,
+        icon: 'bi bi-file-earmark-text',
+        bgClass: 'bg-primary text-white',
+      },
+      {
+        label: 'Activos',
+        count: activos,
+        icon: 'bi bi-hourglass-split',
+        bgClass: 'bg-warning text-white',
+      },
+      {
+        label: 'Completados',
+        count: completados,
+        icon: 'bi bi-check-circle',
+        bgClass: 'bg-success text-white',
+      },
+      {
+        label: 'Cancelados',
+        count: cancelados,
+        icon: 'bi bi-x-circle',
+        bgClass: 'bg-danger text-white',
+      },
     ];
   }
 
-  filtrar(tipo: string) {
-    this.filtroActual = tipo;
+  /**  
+   *  🔥 Cambiado: ahora acepta string para que NO dé error en el template  
+   *  Pero internamente sigue funcionando exacto igual  
+   */
+  filtrar(tipo: string, actualizarFiltro: boolean = true) {
+    if (actualizarFiltro) {
+      this.filtroActual = tipo;
+    }
+
     switch (tipo) {
       case 'activos':
-        this.contratosFiltrados = this.contratos.filter(c => c.estado === 'Activo');
+        this.contratosFiltrados = this.contratos.filter(
+          (c) => c.estado === 'Activo'
+        );
         break;
+
       case 'completados':
-        this.contratosFiltrados = this.contratos.filter(c => c.estado === 'Completado');
+        this.contratosFiltrados = this.contratos.filter(
+          (c) => c.estado === 'Completado'
+        );
         break;
+
       case 'cancelados':
-        this.contratosFiltrados = this.contratos.filter(c => c.estado === 'Cancelado');
+        this.contratosFiltrados = this.contratos.filter(
+          (c) => c.estado === 'Cancelado'
+        );
         break;
+
       default:
         this.contratosFiltrados = [...this.contratos];
         break;
     }
   }
 
-  constructor(private location: Location) {}
-
-  goBack() {
-    this.location.back();
+  marcarComoCompletado(contrato: UiContract) {
+    const destino: EstadoContrato = 'Completado';
+    console.log('Marcar contrato', contrato.id, 'como', destino);
   }
 
   buscarMas() {

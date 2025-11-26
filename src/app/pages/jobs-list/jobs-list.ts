@@ -1,41 +1,56 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Job, JobDetail } from '../../services/job';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
-import { CommonModule } from '@angular/common';
+import { Post, PostService } from '../../services/post.service';
 
 @Component({
   selector: 'app-jobs-list',
+  standalone: true,
   imports: [FormsModule, CurrencyPipe, CommonModule],
   templateUrl: './jobs-list.html',
-  styleUrl: './jobs-list.css'
+  styleUrl: './jobs-list.css',
 })
 export class JobsListComponent implements OnInit {
-  @Input({required: true}) job!: JobDetail;
-  private _router = inject(Router);
-  goToJob(id: number){
-    this._router.navigateByUrl(`job-detail/`+id)
-  }
 
-  jobs: JobDetail[] = [];
-  cargando: boolean = false;
+  jobs: Post[] = [];
+  cargando = false;
   error: string | null = null;
 
   q: string = '';
   categoria: string = '';
   ordenar: string = 'recientes';
 
-  constructor(private router: Router, private jobService: Job) {}
+  constructor(
+    private router: Router,
+    private postService: PostService
+  ) {}
 
   ngOnInit() {
-    // 🔹 Datos simulados (placeholder hasta que el backend esté listo)
-    this.jobs = this.jobService.getTrabajos();
+    this.cargarTrabajos();
+  }
+
+  cargarTrabajos() {
+    this.cargando = true;
+    this.error = null;
+
+    this.postService.getPosts(100, 0).subscribe({
+      next: (res) => {
+        this.jobs = res;
+        this.cargando = false;
+      },
+      error: (err) => {
+        this.error = 'Error cargando trabajos';
+        console.error(err);
+        this.cargando = false;
+      }
+    });
   }
 
   aplicar() {
-    // Aquí podrías agregar lógica de filtrado si quieres
-    console.log('Filtros aplicados:', this.q, this.categoria, this.ordenar);
+    // Aquí iría la lógica real de filtros
+    console.log('Filtros:', this.q, this.categoria, this.ordenar);
   }
 
   limpiar() {
@@ -44,7 +59,7 @@ export class JobsListComponent implements OnInit {
     this.ordenar = 'recientes';
   }
 
-  verDetalles(id: number) {
-    this.router.navigate(['/jobs', id]);
+  goToJob(id: number) {
+    this.router.navigateByUrl(`job-detail/${id}`);
   }
 }

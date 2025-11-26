@@ -1,16 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from "@angular/router";
-
-interface Solicitud {
-  titulo: string;
-  nombre: string;
-  ubicacion: string;
-  categoria: string;
-  pago: number;
-  fecha: string;
-  estado: 'Pendiente' | 'Aceptada' | 'Rechazada';
-}
+import { ApplicationService, Application } from '../../services/application.service';
 
 @Component({
   selector: 'app-solicitud-trabajo',
@@ -20,38 +11,10 @@ interface Solicitud {
   styleUrls: ['./solicitud-trabajo.component.css']
 })
 export class SolicitudTrabajoComponent {
-  // 🔹 Datos base (simulación)
-  solicitudes: Solicitud[] = [
-    {
-      titulo: 'Limpieza de Casa Completa',
-      nombre: 'María González',
-      ubicacion: 'Centro',
-      categoria: 'Limpieza',
-      pago: 50000,
-      fecha: '11/1/2024',
-      estado: 'Pendiente'
-    },
-    {
-      titulo: 'Cuidado de Perro - Fin de Semana',
-      nombre: 'Carlos López',
-      ubicacion: 'Sur',
-      categoria: 'Mascotas',
-      pago: 40000,
-      fecha: '9/1/2024',
-      estado: 'Aceptada'
-    },
-    {
-      titulo: 'Jardinería y Poda de Árboles',
-      nombre: 'Ana Martínez',
-      ubicacion: 'Centro',
-      categoria: 'Limpieza',
-      pago: 20000,
-      fecha: '6/1/2024',
-      estado: 'Rechazada'
-    }
-  ];
 
-  // 🔹 Filtros y datos derivados
+  solicitudesBackend: Application[] = [];
+  solicitudesFiltradas: any[] = [];
+
   filtros: ('Todas' | 'Pendiente' | 'Aceptada' | 'Rechazada')[] = [
     'Todas',
     'Pendiente',
@@ -61,17 +24,58 @@ export class SolicitudTrabajoComponent {
 
   filtroActual: 'Todas' | 'Pendiente' | 'Aceptada' | 'Rechazada' = 'Todas';
 
-  // 🔹 Variables para las tarjetas de resumen
-  totalSolicitudes: number = 0;
-  pendientes: number = 0;
-  aceptadas: number = 0;
-  rechazadas: number = 0;
+  totalSolicitudes = 0;
+  pendientes = 0;
+  aceptadas = 0;
+  rechazadas = 0;
 
-  // 🔹 Solicitudes filtradas
-  solicitudesFiltradas: Solicitud[] = [];
+  loading = false;
+  error = '';
 
-  constructor() {
-    this.actualizarDatos();
+  constructor(private appService: ApplicationService) {}
+
+  ngOnInit() {
+    this.cargarSolicitudes();
+  }
+
+  /** 🔹 Trae aplicaciones reales del backend */
+  cargarSolicitudes() {
+    this.loading = true;
+    this.error = '';
+
+    this.appService.getMyApplications().subscribe({
+      next: (apps) => {
+        this.solicitudesBackend = apps;
+
+        // Mapear al formato visual del HTML
+        this.solicitudesFiltradas = apps.map(a => ({
+          id: a.id,
+          titulo: a.post.title,
+          nombre: "Tú aplicaste", // el backend NO trae nombre del empleador
+          ubicacion: a.post.location,
+          categoria: a.post.category_id,
+          pago: a.post.pay,
+          fecha: new Date(a.post.createdAt).toLocaleDateString(),
+          estado: this.mapEstado(a.status)
+        }));
+
+        this.actualizarDatos();
+        this.loading = false;
+      },
+      error: () => {
+        this.error = "No se pudieron cargar las solicitudes.";
+        this.loading = false;
+      }
+    });
+  }
+
+  /** 🔹 Traducir estados del backend a los visibles */
+  mapEstado(status: string): 'Pendiente' | 'Aceptada' | 'Rechazada' {
+    switch (status) {
+      case 'aceptada': return 'Aceptada';
+      case 'rechazada': return 'Rechazada';
+      default: return 'Pendiente';
+    }
   }
 
   cambiarFiltro(filtro: 'Todas' | 'Pendiente' | 'Aceptada' | 'Rechazada') {
@@ -79,19 +83,18 @@ export class SolicitudTrabajoComponent {
     this.actualizarDatos();
   }
 
-  // 🔹 Método que actualiza los contadores y la lista visible
   actualizarDatos() {
-    this.totalSolicitudes = this.solicitudes.length;
-    this.pendientes = this.solicitudes.filter(s => s.estado === 'Pendiente').length;
-    this.aceptadas = this.solicitudes.filter(s => s.estado === 'Aceptada').length;
-    this.rechazadas = this.solicitudes.filter(s => s.estado === 'Rechazada').length;
+    const lista = this.solicitudesFiltradas;
+
+    this.totalSolicitudes = lista.length;
+    this.pendientes = lista.filter(s => s.estado === 'Pendiente').length;
+    this.aceptadas = lista.filter(s => s.estado === 'Aceptada').length;
+    this.rechazadas = lista.filter(s => s.estado === 'Rechazada').length;
 
     if (this.filtroActual === 'Todas') {
-      this.solicitudesFiltradas = this.solicitudes;
+      this.solicitudesFiltradas = lista;
     } else {
-      this.solicitudesFiltradas = this.solicitudes.filter(
-        s => s.estado === this.filtroActual
-      );
+      this.solicitudesFiltradas = lista.filter(s => s.estado === this.filtroActual);
     }
   }
 }
