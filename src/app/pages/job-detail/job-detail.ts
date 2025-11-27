@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common'; // 👈 Importar DatePipe y CurrencyPipe si usas $
 import { ActivatedRoute } from '@angular/router';
-import { Job, JobDetail } from '../../services/job';
+import { Job } from '../../services/job';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
@@ -19,26 +19,27 @@ import { AuthService } from '../../services/auth.service';
 })
 
 export class JobDetailComponent implements OnInit {
-  job!: JobDetail;
+  job!: Post;
   jobId!: number;
-  trabajos: JobDetail[] = [];
   loggedIn: boolean = false;
 
   constructor(private route: ActivatedRoute, private jobService: Job, private authService : AuthService) { 
-    this.loggedIn= this.authService.isLoggedIn()
+    this.authService.isLoggedIn().subscribe(isAuth => {
+  this.loggedIn = isAuth;
+});
+
   } 
 
   ngOnInit() {
     this.jobId = Number(this.route.snapshot.paramMap.get('id'));
-    this.job = this.obtenerTrabajoPorId(this.jobId);
+    this.jobService.getTrabajoPorId(this.jobId).subscribe(data => {
+    this.job = data;
+    console.log("DATA QUE LLEGA A LA LISTA:", data);
+  });
   }
 
-  obtenerTrabajoPorId(id: number): JobDetail {
-    this.trabajos = this.jobService.getTrabajos();
-    return this.trabajos.find(job => job.id === id)!;
-  }
 
   aplicar() {
-    console.log('Aplicando a:', this.job.titulo);
+    console.log('Aplicando a:', this.job.title);
   }
 }

@@ -4,7 +4,8 @@ interface User {
   last_name: string;
   gender: string;
   description: string;
+  email: string;
   address: string;
   birthday: string;
-  contacts?: Contact[];
+  contact?: Contact[];
 }

@@ -2,35 +2,48 @@
   <h5 class="fw-bold">Información de contacto</h5>
   <span class="text-muted">Gestiona tus métodos de contacto</span>
   <hr>
+
   <div class="mb-4">
     @for (item of contacts; track $index) {
       <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
         <div>
-          <strong>{{item.contactMeansId}}</strong><br>
-          <span class="text-muted">{{item.value}}</span>
+          <strong class="text-muted">{{ item.value }}</strong>
         </div>
+
         <div class="d-flex gap-2">
-          <button class="btn btn-sm btn-outline-secondary">
-            <i class="bi bi-pencil"></i>
-          </button>
-          <button class="btn btn-sm btn-outline-danger">
+
+          <button 
+            class="btn btn-sm btn-outline-danger"
+            (click)="eliminarContacto(item.id!)"
+          >
             <i class="bi bi-trash"></i>
           </button>
         </div>
       </div>
     }
-
   </div>
 
-  <form>
+  <form (ngSubmit)="onSubmit()">
+
     <div class="mb-3">
-      <label for="type" class="form-label">Tipo de contacto</label>
-      <input type="text" class="form-control" id="type" placeholder="Ej: Teléfono, Correo, LinkedIn...">
+      <label class="form-label">Tipo de contacto</label>
+      <select class="form-control" [(ngModel)]="formData.contact_means_id" name="contact_means_id">
+        <option value="">Selecciona una opción</option>
+        @for (mean of contactMeans; track $index) {
+          <option [value]="mean.id">{{mean.type}}</option>
+        }
+      </select>
     </div>
 
     <div class="mb-3">
-      <label for="value" class="form-label">Valor</label>
-      <input type="text" class="form-control" id="value" placeholder="Ingresa el valor del contacto">
+      <label class="form-label">Valor</label>
+      <input 
+        type="text"
+        class="form-control"
+        name="value"
+        placeholder="Ingresa el valor del contacto"
+        [(ngModel)]="formData.value"
+      >
     </div>
 
     <button type="submit" class="btn custom-btn">Agregar contacto</button>

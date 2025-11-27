@@ -1,5 +1,7 @@
 import { Location } from '@angular/common';
 import { Component } from '@angular/core';
+import { ActivatedRoute, Route, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-ver-perfil',
@@ -8,15 +10,27 @@ import { Component } from '@angular/core';
   styleUrl: './ver-perfil.css'
 })
 export class VerPerfilComponent {
+  userId!: number;
+
   user: User = {
     id: 1,
     name: 'Diego',
     last_name: 'Martínez',
     gender: 'masculino',
+    email: '',
     description: 'Desarrollador web apasionado por el código limpio.',
     address: 'Guadalajara, Jalisco, México',
     birthday: '2002-07-15',
   };
+  
+
+  ngOnInit() {
+    this.userId = Number(this.route.snapshot.paramMap.get('userId'));
+    this.authService.getUserById(this.userId).subscribe(data => {
+    this.user = data;
+    this.contacts = data.contact!;
+  });
+  }
 
   contacts: Contact[] = [
     { id: 1, contactMeansId: 1, userId: this.user.id, value: 'diego@example.com' },
@@ -48,7 +62,7 @@ export class VerPerfilComponent {
   },
   ];
 
-  constructor(private location: Location) {}
+  constructor(private location: Location, private route: ActivatedRoute, private authService: AuthService) {}
 
    goBack(): void {
     this.location.back();

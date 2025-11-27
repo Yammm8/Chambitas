@@ -1,11 +1,14 @@
 export interface Contract {
   id: number;
-  postTitle: string;      // Título del trabajo
-  workerName: string;     // Nombre del trabajador
-  category: string;       // Categoría del trabajo
-  pay: number;            // Pago
-  startDate: string;      // Fecha de inicio
-  endDate: string;        // Fecha de fin
-  createdAt: string;      // Fecha de creación
-  status: 'Activo' | 'Completo' | 'Cancelado'; // Estado del contrato
+  start_date: string;
+  end_date: string;
+  status: string; // "activo", "completo", etc.
+  post_id: number;
+  worker_id: number;
+  employer_id: number;
+  createdAt: string;
+  updatedAt: string;
+
+  post: Post;
+  worker: User;
 }

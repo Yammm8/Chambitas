@@ -1,6 +1,8 @@
 import { Location } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { Job } from '../../services/job';
 
 @Component({
   selector: 'app-editar-trabajo',
@@ -8,28 +10,38 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './editar-trabajo.html',
   styleUrl: './editar-trabajo.css',
 })
-export class EditarTrabajoComponent {
-  post: Post = {
-    id: 1,
-    title: 'Desarrollador Frontend Angular',
-    body: 'Se busca desarrollador con experiencia en Angular y Bootstrap 5.',
-    status: true,
-    user_id: 1,
-    createdAt: '2025-10-19T10:00',
-    pay: 5000.0,
-    deadline: '2025-11-01',
-    location: 'Monterrey, Nuevo León',
-  };
+export class EditarTrabajoComponent implements OnInit {
 
-  categories: Category[] = [
-    { id: 1, name: 'Desarrollo web' },
-    { id: 2, name: 'Diseño gráfico' },
-    { id: 3, name: 'Redacción de contenido' },
-  ];
+  post!: Post; // Se llenará con los datos reales
+  categories: Category[] = [];
 
-  selectedCategory = this.categories[0].id;
+  constructor(
+    private location: Location,
+    private route: ActivatedRoute,
+    private jobService: Job
+  ) {}
 
-  constructor(private location: Location) {}
+  ngOnInit(): void {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+
+    this.jobService.getTrabajoPorId(id).subscribe({
+      next: (data: Post) => {
+        this.post = data;
+        this.selectedCategory = data.category_id ?? null;
+      },
+      error: (err) => {
+        console.error("Error cargando trabajo", err);
+      }
+    });
+
+    this.categories = [
+      { id: 1, name: 'Desarrollo web' },
+      { id: 2, name: 'Diseño gráfico' },
+      { id: 3, name: 'Redacción de contenido' },
+    ];
+  }
+
+  selectedCategory: number | null = null;
 
   goBack(): void {
     this.location.back();

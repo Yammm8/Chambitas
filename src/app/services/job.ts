@@ -1,4 +1,7 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { environment } from '../../environments/environment.development';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 export interface JobDetail {
   id: number;
@@ -18,48 +21,23 @@ export interface JobDetail {
 })
 
 export class Job {
-  private trabajos: JobDetail[] = [
-    {
-      id: 1,
-      titulo: 'Diseñador Gráfico Freelance',
-      categoria: 'Diseño',
-      ubicacion: 'Remoto',
-      descripcion: 'Buscamos diseñador con experiencia en branding y redes sociales.',
-      pago: 5000,
-      fechaPublicacion: '2025-10-01',
-      fechaLimite: '2025-10-20',
-      empleador: 'Agencia Creativa XYZ',
-      miembroDesde: '2022'
-    },
-    {
-      id: 2,
-      titulo: 'Repartidor de Comida - Zona Norte',
-      categoria: 'Delivery',
-      ubicacion: 'Norte, Ciudad',
-      descripcion: 'Buscamos repartidores con moto propia. Pago por entrega más propinas.',
-      pago: 3000,
-      fechaPublicacion: '2025-10-05',
-      fechaLimite: '2025-10-25',
-      empleador: 'Comidas Rápidas ABC',
-      miembroDesde: '2021'
-    },
-    {
-      id: 3,
-      titulo: 'Asistente Virtual para E-commerce',
-      categoria: 'Administrativo', 
-      ubicacion: 'Remoto',
-      descripcion: 'Se necesita asistente virtual para manejo de pedidos y atención al cliente.',
-      pago: 4000,
-      fechaPublicacion: '2025-10-10',
-      fechaLimite: '2025-10-30',
-      empleador: 'Tienda Online 123',
-      miembroDesde: '2023'
-    }
-  ];
-  getTrabajos(): JobDetail[] {
-    return this.trabajos;
+  private baseUrl = environment.apiUrl;
+  private http = inject(HttpClient)
+  
+  getTrabajos(): Observable<Post[]>{
+  return this.http.get<Post[]>(`${this.baseUrl}/post/`);
+}
+
+  getTrabajoPorId(id: number): Observable<Post>{
+    return this.http.get<Post>(`${this.baseUrl}/post/${id}`);
   }
-  getTrabajoPorId(id: number): JobDetail | undefined {
-    return this.trabajos.find(trabajo => trabajo.id === id);
+
+  getTrabajosLimit(limit: number, page: number): Observable<Post[]>{
+    return this.http.get<Post[]>(`${this.baseUrl}/post?limit=${limit}&page=${page}`)
   }
+
+  getCategories(): Observable<Category[]> {
+  return this.http.get<Category[]>(`${this.baseUrl}/categories`);
+}
+
 }

@@ -9,4 +9,8 @@ interface Post {
   deadline: string;
   location: string;
   category_id?: number;
+  updatedAt?: string;
+  user?: User;
+  contact?: Contact[];
+  Category?: Category;
 }
