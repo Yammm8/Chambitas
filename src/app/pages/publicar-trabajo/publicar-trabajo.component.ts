@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { PostService } from '../../services/post.service';
 
 @Component({
@@ -9,60 +8,84 @@ import { PostService } from '../../services/post.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './publicar-trabajo.component.html',
-  styleUrls: ['./publicar-trabajo.component.css']
+  styleUrls: ['./publicar-trabajo.component.css'],
 })
 export class PublicarTrabajoComponent {
-
-  // Campos del formulario
-  titulo: string = '';
-  categoria_id: number | null = null;
-  descripcion: string = '';
+  titulo = '';
+  categoria = '';
+  descripcion = '';
   pago: number | null = null;
-  deadline: string = '';
-  ubicacion: string = '';
+  fechaLimite = '';
+  ubicacion = '';
 
-  // estados UI
   loading = false;
   error = '';
   success = false;
 
-  constructor(
-    private postService: PostService,
-    private router: Router
-  ) {}
+  constructor(private postService: PostService) {}
 
-  publicarTrabajo() {
-    if (!this.titulo || !this.descripcion || !this.pago || !this.deadline || !this.categoria_id) {
-      this.error = 'Por favor completa todos los campos requeridos.';
+  onSubmit() {
+    this.error = '';
+    this.success = false;
+
+    if (
+      !this.titulo ||
+      !this.categoria ||
+      !this.descripcion ||
+      !this.pago ||
+      !this.fechaLimite
+    ) {
+      this.error = 'Por favor llena todos los campos obligatorios.';
       return;
     }
 
-    this.error = '';
-    this.loading = true;
+    // Mapeo simple de categoría → id
+    let category_id = 1;
+    switch (this.categoria) {
+      case 'Limpieza':
+        category_id = 1;
+        break;
+      case 'Cuidado de mascotas':
+        category_id = 2;
+        break;
+      case 'Jardinería':
+        category_id = 3;
+        break;
+      default:
+        category_id = 1;
+        break;
+    }
 
-    const body = {
+    const payload = {
       title: this.titulo,
       body: this.descripcion,
       pay: this.pago,
-      deadline: this.deadline,
+      deadline: this.fechaLimite,
       location: this.ubicacion,
-      category_id: this.categoria_id
+      category_id,
     };
 
-    this.postService.createPost(body).subscribe({
-      next: () => {
+    this.loading = true;
+
+    this.postService.createPost(payload).subscribe({
+      next: (resp: string) => {
+        console.log('Respuesta create-post:', resp);
         this.loading = false;
         this.success = true;
 
-        setTimeout(() => {
-          this.router.navigate(['/dashboard']);
-        }, 1200);
+        // Limpia el formulario
+        this.titulo = '';
+        this.categoria = '';
+        this.descripcion = '';
+        this.pago = null;
+        this.fechaLimite = '';
+        this.ubicacion = '';
       },
       error: (err) => {
-        console.error(err);
+        console.error('Error al crear post:', err);
         this.loading = false;
-        this.error = 'No se pudo publicar el trabajo.';
-      }
+        this.error = 'Ocurrió un error al publicar el trabajo.';
+      },
     });
   }
 }

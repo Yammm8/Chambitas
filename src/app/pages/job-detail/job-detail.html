@@ -1,5 +1,4 @@
 <div class="container mt-4 mb-5">
-
   <a
     class="text-decoration-none text-muted d-inline-block mb-3"
     routerLink="/Lista"
@@ -19,7 +18,6 @@
 
   <!-- Solo mostramos el contenido si ya hay job -->
   <ng-container *ngIf="!cargando && !error && job">
-
     <div class="card p-4 mb-4">
       <div class="d-flex justify-content-between align-items-start flex-wrap">
         <div>
@@ -77,31 +75,82 @@
 
       <!-- Sidebar derecha -->
       <div class="col-md-4">
+        <!-- Empleador -->
         <div class="card p-3 mb-3">
           <h6 class="fw-bold mb-2">Empleador</h6>
-          <!-- Aún no tenemos info de usuario empleador desde este endpoint -->
-          <p class="mb-1">Empleador de este trabajo</p>
-          <p class="text-muted small">Miembro desde hace poco</p>
-          <button class="btn btn-outline-dark w-100" routerLink="/verPerfil/22">
+          <p class="mb-1">
+            {{ job.user?.name || 'Empleador de este trabajo' }}
+          </p>
+          <p class="text-muted small">
+            Miembro desde {{ job.user?.createdAt | date:'d/M/yyyy' }}
+          </p>
+
+          <button class="btn btn-outline-dark w-100" (click)="verPerfil()">
             Ver Perfil
           </button>
         </div>
 
+        <!-- Aplicar a este trabajo -->
         <div class="card p-3 mb-3">
           <h6 class="fw-bold mb-3">Aplicar a este trabajo</h6>
+
           <div class="d-flex justify-content-between align-items-center mb-2">
             <span class="fw-bold">
               💵 {{ job.pay | currency:'MXN':'symbol-narrow' }}
             </span>
           </div>
-          <button routerLink="/login" class="btn btn-dark w-100">
-            Iniciar Sesión para Aplicar
-          </button>
-          <p class="small text-center mt-2">
-            ¿No tienes cuenta? <a routerLink="/Registro">Regístrate aquí</a>
-          </p>
+
+          <!-- 1) NO loggeado -->
+          <ng-container *ngIf="!loggedIn">
+            <button routerLink="/login" class="btn btn-dark w-100">
+              Iniciar Sesión para Aplicar
+            </button>
+            <p class="small text-center mt-2">
+              ¿No tienes cuenta? <a routerLink="/Registro">Regístrate aquí</a>
+            </p>
+          </ng-container>
+
+          <!-- 2) Loggeado y ES el dueño -->
+          <ng-container *ngIf="loggedIn && esPropietario">
+            <p class="small text-muted mb-0">
+              Este trabajo fue publicado por ti.
+            </p>
+          </ng-container>
+
+          <!-- 3) Loggeado y NO es su trabajo -->
+          <ng-container *ngIf="loggedIn && !esPropietario">
+            <button
+              class="btn btn-success w-100"
+              (click)="aplicarAlTrabajo()"
+              [disabled]="aplicando || yaAplico || revisandoAplicacion"
+            >
+              {{
+                revisandoAplicacion
+                  ? 'Verificando tu aplicación...'
+                  : (yaAplico
+                      ? 'Ya aplicaste a este trabajo'
+                      : (aplicando
+                          ? 'Enviando solicitud...'
+                          : 'Aplicar a este trabajo'))
+              }}
+            </button>
+
+            <!-- Mensajes debajo del botón -->
+            <p *ngIf="exitoAplicacion" class="small text-success mt-2 mb-0">
+              Tu aplicación fue enviada correctamente.
+            </p>
+
+            <p *ngIf="yaAplico && !exitoAplicacion" class="small text-danger mt-2 mb-0">
+              Ya aplicaste a este trabajo anteriormente.
+            </p>
+
+            <p *ngIf="errorAplicacion && !yaAplico" class="small text-danger mt-2 mb-0">
+              {{ errorAplicacion }}
+            </p>
+          </ng-container>
         </div>
 
+        <!-- Consejos -->
         <div class="card p-3">
           <h6 class="fw-bold mb-2">Consejos de Seguridad</h6>
           <ul class="small text-muted ps-3 mb-0">
@@ -113,6 +162,5 @@
         </div>
       </div>
     </div>
-
   </ng-container>
 </div>

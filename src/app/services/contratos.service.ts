@@ -12,8 +12,10 @@ export interface ContractRaw {
   post_id: number;
   worker_id: number;
   employer_id: number;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
+
+  // El backend puede mandar en minúsculas o mayúsculas
   post?: {
     id: number;
     title: string;
@@ -24,12 +26,34 @@ export interface ContractRaw {
     category_id: number;
     createdAt: string;
   };
+  Post?: {
+    id: number;
+    title: string;
+    body: string;
+    pay: number;
+    deadline: string;
+    location: string;
+    category_id: number;
+    createdAt: string;
+  };
+
   worker?: {
     id: number;
     name: string;
     last_name: string;
   };
+  Worker?: {
+    id: number;
+    name: string;
+    last_name: string;
+  };
+
   employer?: {
+    id: number;
+    name: string;
+    last_name: string;
+  };
+  Employer?: {
     id: number;
     name: string;
     last_name: string;
@@ -58,19 +82,21 @@ export class ContratosService {
 
   /** 🔹 Contratos donde soy trabajador */
   getContractsAsWorker(): Observable<ContractRaw[]> {
-    return this.http.get<ContractRaw[]>(`${this.apiUrl}/worker`, {
+    // docs: GET /api/contract/contracts-worker
+    return this.http.get<ContractRaw[]>(`${this.apiUrl}/contracts-worker`, {
       withCredentials: true,
     });
   }
 
   /** 🔹 Contratos donde soy empleador */
   getContractsAsEmployer(): Observable<ContractRaw[]> {
-    return this.http.get<ContractRaw[]>(`${this.apiUrl}/employer`, {
+    // docs: GET /api/contract/contracts-employer
+    return this.http.get<ContractRaw[]>(`${this.apiUrl}/contracts-employer`, {
       withCredentials: true,
     });
   }
 
-  /** 🔹 Contratos asociados a un post específico */
+  /** 🔹 Contratos asociados a un post específico (si lo llegan a usar) */
   getContractsByPost(postId: number): Observable<ContractRaw[]> {
     return this.http.get<ContractRaw[]>(`${this.apiUrl}/post/${postId}`, {
       withCredentials: true,
@@ -79,29 +105,31 @@ export class ContratosService {
 
   /** 🔹 Mapear estado backend → UI */
   private mapEstado(status: string): EstadoContrato {
-    switch (status) {
-      case 'completado':
-        return 'Completado';
-      case 'cancelado':
-        return 'Cancelado';
-      default:
-        return 'Activo';
-    }
+    const s = (status || '').toLowerCase();
+
+    if (s === 'completado') return 'Completado';
+    if (s === 'cancelado') return 'Cancelado';
+    return 'Activo';
   }
 
   /** 🔹 Mapear array crudo → modelo para las tarjetas de la UI */
   mapRawToUi(raw: ContractRaw[]): UiContract[] {
     return raw.map((c) => {
+      // Soportar post/Post
+      const postData = c.post || c.Post;
+      // Soportar worker/Worker
+      const workerData = c.worker || c.Worker;
+
       const trabajador =
-        c.worker?.name && c.worker?.last_name
-          ? `${c.worker.name} ${c.worker.last_name}`
+        workerData && workerData.name && workerData.last_name
+          ? `${workerData.name} ${workerData.last_name}`
           : 'Trabajador';
 
-      const categoria = c.post?.category_id
-        ? `Categoría ${c.post.category_id}`
+      const categoria = postData?.category_id
+        ? `Categoría ${postData.category_id}`
         : 'General';
 
-      const pago = c.post?.pay ?? 0;
+      const pago = postData?.pay ?? 0;
 
       const fechaInicio = c.start_date
         ? new Date(c.start_date).toLocaleDateString()
@@ -114,7 +142,7 @@ export class ContratosService {
         ? new Date(c.createdAt).toLocaleDateString()
         : '';
 
-      const titulo = c.post?.title ?? 'Contrato';
+      const titulo = postData?.title ?? 'Contrato';
 
       return {
         id: c.id,
@@ -130,7 +158,7 @@ export class ContratosService {
     });
   }
 
-  /** 🔹 Cambiar estado de contrato (por si luego lo usas) */
+  /** 🔹 Cambiar estado de contrato */
   updateContractStatus(id: number, estado: EstadoContrato) {
     let backendStatus = 'activo';
     switch (estado) {
@@ -144,10 +172,9 @@ export class ContratosService {
         backendStatus = 'activo';
     }
 
-    return this.http.patch(
-      `${this.apiUrl}/${id}`,
-      { status: backendStatus },
-      { withCredentials: true }
-    );
+    return this.http.patch(`${this.apiUrl}/${id}`, { status: backendStatus }, {
+      withCredentials: true,
+      responseType: 'text', // el endpoint devuelve solo texto
+    });
   }
 }

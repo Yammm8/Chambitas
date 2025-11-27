@@ -3,31 +3,26 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #fafafa;
+  background-color: #f5f5f5;
 }
 
 .register-card {
   background: white;
   padding: 2.5rem;
   border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   width: 100%;
-  max-width: 400px;
+  max-width: 450px;
   text-align: center;
+  position: relative;
 }
 
-.logo {
-  width: 50px;
-  height: 50px;
-  background: black;
-  color: white;
-  font-weight: bold;
-  font-size: 1.25rem;
-  border-radius: 12px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto 1rem;
+.register-card i {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  cursor: pointer;
+  color: #333;
 }
 
 .title {
@@ -65,15 +60,19 @@ label {
 
 input[type='text'],
 input[type='email'],
-input[type='password'] {
+input[type='password'],
+select,
+input[type='date'] {
   width: 100%;
-  padding: 0.6rem;
+  padding: 0.65rem;
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 0.9rem;
+  transition: border-color 0.2s;
 }
 
-input:focus {
+input:focus,
+select:focus {
   outline: none;
   border-color: #000;
 }
@@ -98,7 +97,6 @@ input:focus {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  text-align: left;
   margin-top: 0.5rem;
   margin-bottom: 1rem;
   font-size: 0.85rem;
@@ -107,14 +105,32 @@ input:focus {
 /* Botón */
 .btn-register {
   width: 100%;
-  background: black;
+  background: #000;
   color: white;
   padding: 0.75rem;
   border: none;
   border-radius: 6px;
   font-size: 0.95rem;
   cursor: pointer;
+  margin-top: 1rem;
 }
+
+.logo {
+  display: flex;
+  justify-content: center;   /* Centrado horizontal */
+  align-items: center;       /* Centrado vertical */
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 1rem;       /* Centra el contenedor en la página */
+  cursor: pointer;
+}
+
+.logo i {
+  font-size: 1.5rem;         /* Tamaño del ícono */
+  display: block;             /* Hace que ocupe todo el contenedor y respete el centrado */
+  color: black;
+}
+
 
 .btn-register:hover {
   opacity: 0.9;
@@ -129,7 +145,7 @@ input:focus {
 
 .login-anchor {
   font-weight: 600;
-  color: black;
+  color: #000;
   text-decoration: none;
 }
 

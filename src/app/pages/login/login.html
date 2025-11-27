@@ -19,6 +19,7 @@
           placeholder="tu@email.com"
           required
         />
+          <p class="text-danger text-red-500 text-sm mt-1" *ngIf="fieldErrors['email']">{{ fieldErrors['email'] }}</p>
       </div>
 
       <!-- Contraseña -->
@@ -35,7 +36,9 @@
           <button type="button" class="eye-btn" (click)="togglePassword()">
             {{ showPassword ? '🙈' : '👁️' }}
           </button>
+
         </div>
+        <p class="text-danger text-red-500 text-sm mt-1" *ngIf="fieldErrors['password']">{{ fieldErrors['password'] }}</p>
       </div>
 
       <button type="submit" class="btn btn-dark w-100">Iniciar Sesión</button>

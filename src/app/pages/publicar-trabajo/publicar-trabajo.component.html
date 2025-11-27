@@ -1,4 +1,11 @@
 <div class="publicar-trabajo-page">
+  <!-- Mensajes -->
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+  <div *ngIf="success" class="alert alert-success">
+    Trabajo publicado correctamente.
+  </div>
 
   <main class="form-card">
     <h2>Crear nueva oferta de trabajo</h2>
@@ -6,53 +13,82 @@
       Completa la información para publicar tu oferta de trabajo informal.
     </p>
 
-    <!-- MENSAJES -->
-    <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
-    <div *ngIf="success" class="alert alert-success">Trabajo publicado correctamente 🎉</div>
-
-    <form (ngSubmit)="publicarTrabajo()">
-
+    <!-- Usamos (ngSubmit) para que dispare onSubmit() -->
+    <form (ngSubmit)="onSubmit()" novalidate>
       <div class="campo">
         <label for="titulo">Título del trabajo *</label>
-        <input id="titulo" type="text" [(ngModel)]="titulo" name="titulo"
-               placeholder="Ej: Limpieza de casa, Cuidado de mascotas..." />
+        <input
+          id="titulo"
+          type="text"
+          placeholder="Ej: Limpieza de casa, Cuidado de mascotas..."
+          [(ngModel)]="titulo"
+          name="titulo"
+        />
       </div>
 
       <div class="campo">
         <label for="categoria">Categoría *</label>
-        <select id="categoria" [(ngModel)]="categoria_id" name="categoria">
-          <option [ngValue]="null">Selecciona una categoría</option>
-          <option [ngValue]="1">Limpieza</option>
-          <option [ngValue]="2">Cuidado de mascotas</option>
-          <option [ngValue]="3">Jardinería</option>
+        <select
+          id="categoria"
+          [(ngModel)]="categoria"
+          name="categoria"
+        >
+          <option value="">Selecciona una categoría</option>
+          <option value="Limpieza">Limpieza</option>
+          <option value="Cuidado de mascotas">Cuidado de mascotas</option>
+          <option value="Jardinería">Jardinería</option>
         </select>
       </div>
 
       <div class="campo">
         <label for="descripcion">Descripción *</label>
-        <textarea id="descripcion" [(ngModel)]="descripcion" name="descripcion"
-                  placeholder="Describe detalladamente el trabajo que necesitas realizar..."></textarea>
+        <textarea
+          id="descripcion"
+          placeholder="Describe detalladamente el trabajo que necesitas realizar..."
+          [(ngModel)]="descripcion"
+          name="descripcion"
+        ></textarea>
       </div>
 
       <div class="fila">
         <div class="campo mitad">
           <label for="pago">Pago (MXN) *</label>
-          <input id="pago" type="number" [(ngModel)]="pago" name="pago" placeholder="5000" />
+          <input
+            id="pago"
+            type="number"
+            placeholder="5000"
+            [(ngModel)]="pago"
+            name="pago"
+          />
         </div>
 
         <div class="campo mitad">
           <label for="fecha">Fecha Límite *</label>
-          <input id="fecha" type="date" [(ngModel)]="deadline" name="deadline" />
+          <input
+            id="fecha"
+            type="date"
+            [(ngModel)]="fechaLimite"
+            name="fechaLimite"
+          />
         </div>
       </div>
 
       <div class="campo">
         <label for="ubicacion">Ubicación</label>
-        <input id="ubicacion" type="text" [(ngModel)]="ubicacion" name="ubicacion"
-               placeholder="Ej: Centro, Norte, Sur de la ciudad..." />
+        <input
+          id="ubicacion"
+          type="text"
+          placeholder="Ej: Centro, Norte, Sur de la ciudad..."
+          [(ngModel)]="ubicacion"
+          name="ubicacion"
+        />
       </div>
 
-      <button type="submit" class="boton" [disabled]="loading">
+      <button
+        type="submit"
+        class="boton"
+        [disabled]="loading"
+      >
         {{ loading ? 'Publicando...' : 'Publicar trabajo' }}
       </button>
     </form>

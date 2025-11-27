@@ -1,147 +1,190 @@
-import { Component } from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { forkJoin } from 'rxjs';
+
 import {
   ContratosService,
-  UiContract,
+  ContractRaw,
   EstadoContrato,
 } from '../../services/contratos.service';
+
+type RolContrato = 'trabajador' | 'empleador';
+type EstadoContratoUI = 'Activo' | 'Completado' | 'Cancelado';
+type FiltroEstado = 'Todos' | EstadoContratoUI;
+
+interface ContratoUI {
+  id: number;
+  rol: RolContrato;
+  titulo: string;
+  contraparte: string;
+  ubicacion: string;
+  categoria: string;
+  pago: number;
+  fechaInicio: string;
+  fechaFin: string;
+  estado: EstadoContratoUI;
+}
 
 @Component({
   selector: 'app-administracion-contratos',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, CurrencyPipe, DatePipe],
   templateUrl: './administracion-contratos.component.html',
   styleUrls: ['./administracion-contratos.component.css'],
 })
-export class AdministracionContratosComponent {
-  contratos: UiContract[] = [];
-  contratosFiltrados: UiContract[] = [];
+export class AdministracionContratosComponent implements OnInit {
+  // contratos completos
+  contratosTrabajador: ContratoUI[] = [];
+  contratosEmpleador: ContratoUI[] = [];
 
-  /**  🔥 Cambiado a string para que NO genere error con el HTML */
-  filtroActual: string = 'todos';
+  // filtrados según estado
+  contratosTrabajadorFiltrados: ContratoUI[] = [];
+  contratosEmpleadorFiltrados: ContratoUI[] = [];
 
-  stats: { label: string; count: number; icon: string; bgClass: string }[] = [];
-  filtros: string[] = ['todos', 'activos', 'completados', 'cancelados'];
+  // pestaña y filtro
+  tabActual: RolContrato = 'trabajador';
+  filtros: FiltroEstado[] = ['Todos', 'Activo', 'Completado', 'Cancelado'];
+  filtroActual: FiltroEstado = 'Todos';
 
+  // estado general
   loading = false;
   error = '';
+  actualizandoId: number | null = null;
 
-  constructor(
-    private location: Location,
-    private contratosService: ContratosService
-  ) {}
+  constructor(private contratosService: ContratosService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.cargarContratos();
   }
 
-  goBack() {
-    this.location.back();
-  }
-
-  /** Cargar contratos del backend (como TRABAJADOR) */
-  cargarContratos() {
+  private cargarContratos(): void {
     this.loading = true;
     this.error = '';
 
-    this.contratosService.getContractsAsWorker().subscribe({
-      next: (raw) => {
-        // 1) mapear a modelo de la UI
-        this.contratos = this.contratosService.mapRawToUi(raw);
+    forkJoin<[ContractRaw[], ContractRaw[]]>([
+      this.contratosService.getContractsAsWorker(),
+      this.contratosService.getContractsAsEmployer(),
+    ]).subscribe({
+      next: ([workerContracts, employerContracts]) => {
+        this.contratosTrabajador = workerContracts.map((c) =>
+          this.mapContractToUI(c, 'trabajador')
+        );
+        this.contratosEmpleador = employerContracts.map((c) =>
+          this.mapContractToUI(c, 'empleador')
+        );
 
-        // 2) aplicar filtro actual y actualizar estadísticas
-        this.filtrar(this.filtroActual, false);
-        this.actualizarStats();
-
+        this.actualizarFiltrados();
         this.loading = false;
+
+        console.log('Contratos trabajador:', this.contratosTrabajador);
+        console.log('Contratos empleador:', this.contratosEmpleador);
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error(err);
-        this.error = 'No se pudieron cargar los contratos.';
+        this.error = 'No se pudieron cargar tus contratos.';
         this.loading = false;
       },
     });
   }
 
-  actualizarStats() {
-    const total = this.contratos.length;
-    const activos = this.contratos.filter((c) => c.estado === 'Activo').length;
-    const completados = this.contratos.filter(
-      (c) => c.estado === 'Completado'
-    ).length;
-    const cancelados = this.contratos.filter(
-      (c) => c.estado === 'Cancelado'
-    ).length;
+  private mapContractToUI(c: ContractRaw, rol: RolContrato): ContratoUI {
+    const post = c.post || c.Post;
+    const worker = c.worker || c.Worker;
+    const employer = c.employer || c.Employer;
 
-    this.stats = [
-      {
-        label: 'Total',
-        count: total,
-        icon: 'bi bi-file-earmark-text',
-        bgClass: 'bg-primary text-white',
-      },
-      {
-        label: 'Activos',
-        count: activos,
-        icon: 'bi bi-hourglass-split',
-        bgClass: 'bg-warning text-white',
-      },
-      {
-        label: 'Completados',
-        count: completados,
-        icon: 'bi bi-check-circle',
-        bgClass: 'bg-success text-white',
-      },
-      {
-        label: 'Cancelados',
-        count: cancelados,
-        icon: 'bi bi-x-circle',
-        bgClass: 'bg-danger text-white',
-      },
-    ];
+    const contraparteUser = rol === 'trabajador' ? employer : worker;
+
+    const nombreContraparte = contraparteUser
+      ? `${contraparteUser.name ?? ''} ${contraparteUser.last_name ?? ''}`.trim()
+      : 'Sin nombre';
+
+    // estado
+    const s = (c.status || '').toLowerCase();
+    let estado: EstadoContratoUI = 'Activo';
+    if (s === 'completado' || s === 'terminado') estado = 'Completado';
+    if (s === 'cancelado') estado = 'Cancelado';
+
+    const fechaInicio = c.start_date ? c.start_date.split('T')[0] : '';
+    const fechaFin = c.end_date ? c.end_date.split('T')[0] : '';
+
+    const categoria =
+      post && typeof post.category_id === 'number'
+        ? `Categoría #${post.category_id}`
+        : 'Sin categoría';
+
+    return {
+      id: c.id,
+      rol,
+      titulo: post?.title ?? `Publicación #${post?.id ?? c.post_id ?? '—'}`,
+      contraparte: nombreContraparte || 'Sin nombre',
+      ubicacion: post?.location ?? 'Sin ubicación',
+      categoria,
+      pago: post?.pay ?? 0,
+      fechaInicio,
+      fechaFin,
+      estado,
+    };
   }
 
-  /**  
-   *  🔥 Cambiado: ahora acepta string para que NO dé error en el template  
-   *  Pero internamente sigue funcionando exacto igual  
-   */
-  filtrar(tipo: string, actualizarFiltro: boolean = true) {
-    if (actualizarFiltro) {
-      this.filtroActual = tipo;
-    }
-
-    switch (tipo) {
-      case 'activos':
-        this.contratosFiltrados = this.contratos.filter(
-          (c) => c.estado === 'Activo'
-        );
-        break;
-
-      case 'completados':
-        this.contratosFiltrados = this.contratos.filter(
-          (c) => c.estado === 'Completado'
-        );
-        break;
-
-      case 'cancelados':
-        this.contratosFiltrados = this.contratos.filter(
-          (c) => c.estado === 'Cancelado'
-        );
-        break;
-
-      default:
-        this.contratosFiltrados = [...this.contratos];
-        break;
-    }
+  cambiarTab(tab: RolContrato): void {
+    this.tabActual = tab;
+    this.actualizarFiltrados();
   }
 
-  marcarComoCompletado(contrato: UiContract) {
-    const destino: EstadoContrato = 'Completado';
-    console.log('Marcar contrato', contrato.id, 'como', destino);
+  cambiarFiltro(filtro: FiltroEstado): void {
+    this.filtroActual = filtro;
+    this.actualizarFiltrados();
   }
 
-  buscarMas() {
-    console.log('Buscar más trabajos');
+  private aplicarFiltro(lista: ContratoUI[]): ContratoUI[] {
+    if (this.filtroActual === 'Todos') return lista;
+    return lista.filter((c) => c.estado === this.filtroActual);
+  }
+
+  private actualizarFiltrados(): void {
+    this.contratosTrabajadorFiltrados = this.aplicarFiltro(
+      this.contratosTrabajador
+    );
+    this.contratosEmpleadorFiltrados = this.aplicarFiltro(
+      this.contratosEmpleador
+    );
+  }
+
+  /** Botón "Marcar como completado" */
+  marcarCompletado(contrato: ContratoUI): void {
+    if (contrato.estado === 'Completado') return;
+
+    this.actualizandoId = contrato.id;
+    this.error = '';
+
+    const nuevoEstado: EstadoContrato = 'Completado';
+
+    this.contratosService
+      .updateContractStatus(contrato.id, nuevoEstado)
+      .subscribe({
+        next: () => {
+          contrato.estado = 'Completado';
+          this.actualizandoId = null;
+        },
+        error: (err: any) => {
+          console.error(err);
+          this.error = 'No se pudo actualizar el contrato.';
+          this.actualizandoId = null;
+        },
+      });
+  }
+
+  /** Para saber qué lista mostrar según la pestaña */
+  get listaVisible(): ContratoUI[] {
+    return this.tabActual === 'trabajador'
+      ? this.contratosTrabajadorFiltrados
+      : this.contratosEmpleadorFiltrados;
+  }
+
+  get tituloTabActual(): string {
+    return this.tabActual === 'trabajador'
+      ? 'Contratos como trabajador'
+      : 'Contratos como empleador';
   }
 }

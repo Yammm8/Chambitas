@@ -5,11 +5,10 @@ import { ActivatedRoute } from '@angular/router';
 
 import { CardItem } from '../../components/card-item/card-item';
 import { PostService, Post } from '../../services/post.service';
-import { ApplicationService, Application } from '../../services/application.service';
 import {
-  ContratosService,
-  UiContract,
-} from '../../services/contratos.service';
+  ApplicationService,
+  Application,
+} from '../../services/application.service';
 
 interface Category {
   id: number;
@@ -26,7 +25,8 @@ type EstadoSolicitudUI = 'Pendiente' | 'Aceptada' | 'Rechazada';
   styleUrls: ['./editar-trabajo.css'],
 })
 export class EditarTrabajoComponent implements OnInit {
-  tab: 'editar' | 'solicitudes' | 'contratos' = 'editar';
+  // pestaña actual
+  tab: 'editar' | 'solicitudes' = 'editar';
 
   post: Post = {
     id: 0,
@@ -72,15 +72,16 @@ export class EditarTrabajoComponent implements OnInit {
     estado: EstadoSolicitudUI;
   }[] = [];
 
-  // 🔹 contratos reales (mapeados a UiContract)
-  contratos: UiContract[] = [];
+  // 🔹 estado para modal de fecha de inicio
+  mostrandoModalFecha = false;
+  solicitudSeleccionadaId: number | null = null;
+  fechaInicioSeleccionada = '';
 
   constructor(
     private location: Location,
     private route: ActivatedRoute,
     private postService: PostService,
-    private applicationService: ApplicationService,
-    private contratosService: ContratosService,
+    private applicationService: ApplicationService
   ) {}
 
   ngOnInit(): void {
@@ -116,9 +117,10 @@ export class EditarTrabajoComponent implements OnInit {
         this.loading = false;
         console.log('Post cargado:', this.post);
 
-        // solicitudes y contratos ligados a este post
-        this.cargarSolicitudesDePost(this.post.id);
-        this.cargarContratosDePost(this.post.id);
+        // solicitudes ligadas a este post
+        if (this.post.id) {
+          this.cargarSolicitudesDePost(this.post.id);
+        }
       },
       error: (err) => {
         console.error(err);
@@ -129,7 +131,7 @@ export class EditarTrabajoComponent implements OnInit {
   }
 
   private mapEstado(status: string): EstadoSolicitudUI {
-    switch (status) {
+    switch (status?.toLowerCase()) {
       case 'aceptada':
         return 'Aceptada';
       case 'rechazada':
@@ -140,23 +142,30 @@ export class EditarTrabajoComponent implements OnInit {
   }
 
   private cargarSolicitudesDePost(postId: number): void {
+    console.log('Cargando solicitudes para postId =', postId);
+
     this.applicationService.getApplicationsByPost(postId).subscribe({
       next: (apps: Application[]) => {
+        console.log('Respuesta getApplicationsByPost:', apps);
+
         this.solicitudes = apps.map((a) => {
-          const nombre = a.user
-            ? `${a.user.name} ${a.user.last_name}`
+          const user = a.User || (a as any).user;
+
+          const nombre = user
+            ? `${user.name ?? ''} ${user.last_name ?? ''}`.trim()
             : 'Trabajador';
 
-          const ubicacion =
-            a.post.location || a.user?.address || 'Sin ubicación';
+          const post: any = (a as any).Post || (a as any).post || {};
 
-          const categoria = a.post.category_id
-            ? `Categoría ${a.post.category_id}`
-            : 'General';
+          const ubicacion = post.location || user?.address || 'Sin ubicación';
 
-          const fecha = new Date(
-            a.createdAt || a.post.createdAt
-          ).toLocaleDateString();
+          const categoria = post.category_id
+            ? `Categoría ${post.category_id}`
+            : 'Sin categoría';
+
+          const fechaBase = (a as any).createdAt || post.createdAt;
+          const fecha =
+            typeof fechaBase === 'string' ? fechaBase.split('T')[0] : '';
 
           return {
             id: a.id,
@@ -168,22 +177,10 @@ export class EditarTrabajoComponent implements OnInit {
           };
         });
 
-        console.log('Solicitudes del post:', this.solicitudes);
+        console.log('Solicitudes del post mapeadas:', this.solicitudes);
       },
       error: (err) => {
         console.error('Error cargando solicitudes del post:', err);
-      },
-    });
-  }
-
-  private cargarContratosDePost(postId: number): void {
-    this.contratosService.getContractsByPost(postId).subscribe({
-      next: (raw) => {
-        this.contratos = this.contratosService.mapRawToUi(raw);
-        console.log('Contratos del post:', this.contratos);
-      },
-      error: (err) => {
-        console.error('Error cargando contratos del post:', err);
       },
     });
   }
@@ -227,7 +224,9 @@ export class EditarTrabajoComponent implements OnInit {
     });
   }
 
-  // 🔹 actualizar estado de solicitud
+  // ------------------ manejo de solicitudes ------------------
+
+  // viene desde <app-card-item> (Aceptar / Rechazar)
   onEstadoSolicitud(event: { id?: number; nuevoEstado: string }) {
     console.log('Solicitud actualizada (UI):', event);
 
@@ -238,6 +237,23 @@ export class EditarTrabajoComponent implements OnInit {
 
     const uiEstado = event.nuevoEstado as EstadoSolicitudUI;
 
+    // Si es Aceptada, abrimos modal para elegir fecha de inicio
+    if (uiEstado === 'Aceptada') {
+      this.solicitudSeleccionadaId = event.id;
+      this.fechaInicioSeleccionada = this.obtenerHoyISO();
+      this.mostrandoModalFecha = true;
+      return;
+    }
+
+    // Pendiente / Rechazada se mandan directo
+    this.actualizarSolicitudEnBackend(event.id, uiEstado);
+  }
+
+  private actualizarSolicitudEnBackend(
+    id: number,
+    uiEstado: EstadoSolicitudUI,
+    fechaInicio?: string
+  ): void {
     let backendStatus = 'pendiente';
     switch (uiEstado) {
       case 'Aceptada':
@@ -250,34 +266,55 @@ export class EditarTrabajoComponent implements OnInit {
         backendStatus = 'pendiente';
     }
 
-    const idx = this.solicitudes.findIndex((s) => s.id === event.id);
+    // actualizamos en el arreglo local
+    const idx = this.solicitudes.findIndex((s) => s.id === id);
     if (idx !== -1) {
       this.solicitudes[idx].estado = uiEstado;
     }
 
-    this.applicationService.updateApplicationStatus(event.id, backendStatus).subscribe({
-      next: () => {
-        console.log('Solicitud actualizada en backend');
-        this.success = 'Estado de solicitud actualizado.';
-      },
-      error: (err) => {
-        console.error('Error actualizando solicitud en backend:', err);
-        this.error = 'No se pudo actualizar la solicitud.';
-        this.cargarSolicitudesDePost(this.post.id);
-      },
-    });
+    this.applicationService
+      .updateApplicationStatus(id, backendStatus, fechaInicio)
+      .subscribe({
+        next: (msg) => {
+          console.log('Solicitud actualizada en backend:', msg);
+          this.success = 'Estado de solicitud actualizado.';
+        },
+        error: (err) => {
+          console.error('Error actualizando solicitud en backend:', err);
+          this.error = 'No se pudo actualizar la solicitud.';
+          if (this.post.id) {
+            this.cargarSolicitudesDePost(this.post.id);
+          }
+        },
+      });
   }
 
-  onEstadoContrato(event: { id?: number; nuevoEstado: string }) {
-    console.log('Contrato actualizado (UI):', event);
-    // aquí podrías luego llamar this.contratosService.updateContractStatus(...)
+  // -------- modal de fecha de inicio --------
+
+  confirmarFechaInicio(): void {
+    if (!this.solicitudSeleccionadaId) return;
+    if (!this.fechaInicioSeleccionada) return;
+
+    const id = this.solicitudSeleccionadaId;
+
+    this.mostrandoModalFecha = false;
+    this.solicitudSeleccionadaId = null;
+
+    this.actualizarSolicitudEnBackend(id, 'Aceptada', this.fechaInicioSeleccionada);
   }
 
+  cancelarModalFecha(): void {
+    this.mostrandoModalFecha = false;
+    this.solicitudSeleccionadaId = null;
+    this.fechaInicioSeleccionada = '';
+  }
+
+  private obtenerHoyISO(): string {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  // helper para el card-item
   getItemSolicitud(s: any) {
     return { ...s, tipo: 'solicitud' };
-  }
-
-  getItemContrato(c: any) {
-    return { ...c, tipo: 'contrato' };
   }
 }

@@ -1,87 +1,112 @@
-<div class="container my-5">
-    <button
-    class="btn btn-outline-secondary mb-4 d-flex align-items-center"
-    (click)="goBack()"
-  >
-    <i class="bi bi-arrow-left me-2"></i>
-    Volver
+<div class="container py-4">
+
+  <button class="btn btn-outline-secondary mb-4" (click)="goBack()">
+    ← Volver
   </button>
-    <div class="card shadow-lg border-0">
 
-        <div class="card-body p-5">
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
 
+  <div *ngIf="!user && !error" class="alert alert-info">
+    Cargando información del perfil...
+  </div>
 
-            <div class="row align-items-center">
-                <!-- Imagen de perfil -->
-                <div class="col-md-3 text-center">
-                    <img src="https://cdn-icons-png.flaticon.com/512/219/219970.png" alt="Profile Picture"
-                        class="img-fluid rounded-circle shadow-sm mb-3" style="width: 150px;" />
-                    <h4 class="fw-bold">{{ user.name }} {{ user.last_name }}</h4>
-                    <p class="text-muted">{{ user.gender }}</p>
-                </div>
+  <div *ngIf="user" class="card shadow-sm border-0">
+    <div class="card-body p-4 p-md-5">
 
-                <!-- Información personal -->
-                <div class="col-md-9">
-                    <h5 class="fw-bold mb-3">Información personal</h5>
-                    <ul class="list-group list-group-flush mb-4">
-                        <li class="list-group-item">
-                            <strong>Descripción:</strong>
-                            <span class="ms-2">{{ user.description || 'Sin descripción' }}</span>
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Dirección:</strong>
-                            <span class="ms-2">{{ user.address || 'No especificada' }}</span>
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Fecha de nacimiento:</strong>
-                            <span class="ms-2">{{ user.birthday }}</span>
-                        </li>
-                    </ul>
-
-                    <!-- Contactos -->
-                    <h5 class="fw-bold mb-3">Medios de contacto</h5>
-                    <ul class="list-group list-group-flush mb-4">
-
-                        @for (contact of contacts; track $index) {
-                        <li class="list-group-item">
-                            {{ contact.value }}
-                        </li>
-                        }
-
-
-                    </ul>
-
-                    <!-- Publicaciones -->
-                    <div class="d-flex justify-content-between align-items-center mt-4">
-                        <h5 class="fw-bold">Publicaciones</h5>
-                        <span class="badge bg-primary fs-6">
-                            {{ posts.length }} publicaciones
-                        </span>
-                    </div>
-
-                    <div>
-
-                        @if(posts.length > 0){
-                        <ul class="list-group mt-3">
-
-                            @for (post of posts; track $index) {
-                            <li class="list-group-item d-flex justify-content-between align-items-center ">
-                                <span>{{ post.title }}</span>
-                                <span class="badge bg-secondary">{{ post.status ? 'Activo' : 'Inactivo' }}</span>
-                            </li>
-
-                            }
-                        </ul>
-                        }@else{
-                        <ng-template #noPosts>
-                            <p class="text-muted mt-3">Este usuario no ha publicado nada aún.</p>
-                        </ng-template>
-                        }
-
-                    </div>
-
-                </div>
-            </div>
+      <!-- Encabezado -->
+      <div class="row">
+        <div class="col-md-3 text-center mb-4 mb-md-0">
+          <!-- avatar simple -->
+          <div
+            class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+            style="width: 140px; height: 140px; background-color: #e9ecef;"
+          >
+            <i class="bi bi-person-fill fs-1"></i>
+          </div>
+          <h4 class="fw-bold mb-1">
+            {{ user.name }} {{ user.last_name }}
+          </h4>
+          <p class="text-muted mb-0">
+            {{ user.gender || ' ' }}
+          </p>
         </div>
+
+        <div class="col-md-9">
+
+          <!-- Información personal -->
+          <h5 class="fw-bold mb-3">Información personal</h5>
+          <p>
+            <strong>Descripción:</strong>
+            {{ user.description || 'Sin descripción' }}
+          </p>
+          <p>
+            <strong>Dirección:</strong>
+            {{ user.address || 'Sin dirección registrada' }}
+          </p>
+          <p>
+            <strong>Fecha de nacimiento:</strong>
+            {{ user.birthday ? (user.birthday | date:'yyyy-MM-dd') : 'Sin registro' }}
+          </p>
+
+          <hr />
+
+          <!-- Medios de contacto -->
+          <h5 class="fw-bold mb-3">Medios de contacto</h5>
+
+          <div *ngIf="contacts.length === 0" class="text-muted">
+            No hay medios de contacto registrados.
+          </div>
+
+          <ul *ngIf="contacts.length > 0" class="list-unstyled mb-0">
+            <li *ngFor="let c of contacts" class="mb-1">
+              <strong>{{ c.type }}:</strong> {{ c.value }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <hr class="my-4" />
+
+      <!-- Publicaciones -->
+      <div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0">Publicaciones</h5>
+          <span class="badge bg-primary" *ngIf="posts.length > 0">
+            {{ posts.length }} publicaciones
+          </span>
+        </div>
+
+        <div *ngIf="loading" class="text-muted">
+          Cargando publicaciones...
+        </div>
+
+        <div *ngIf="!loading && posts.length === 0" class="text-muted">
+          No hay publicaciones para mostrar.
+        </div>
+
+        <div *ngIf="!loading && posts.length > 0" class="list-group">
+          <div
+            *ngFor="let p of posts"
+            class="list-group-item d-flex justify-content-between align-items-center"
+          >
+            <div>
+              <div class="fw-semibold">{{ p.title }}</div>
+              <small class="text-muted">
+                {{ p.location }} · {{ p.createdAt | date:'yyyy-MM-dd' }}
+              </small>
+            </div>
+            <span
+              class="badge"
+              [ngClass]="p.status ? 'bg-success' : 'bg-secondary'"
+            >
+              {{ p.status ? 'Activo' : 'Inactivo' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
     </div>
+  </div>
 </div>

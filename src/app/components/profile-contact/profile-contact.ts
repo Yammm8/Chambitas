@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { ContactDetail } from '../../services/user';
 
 @Component({
   selector: 'app-profile-contact',
@@ -8,5 +7,5 @@ import { ContactDetail } from '../../services/user';
   styleUrl: './profile-contact.css'
 })
 export class ProfileContact {
-  @Input() contacts: ContactDetail[] = [];
+  @Input() contacts: Contact[] = [];
 }

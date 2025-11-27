@@ -31,15 +31,23 @@
         </button>
       </div>
     </div>
-
-    <div class="d-none d-lg-flex gap-3 align-items-center">
-      <button class="btn btn-outline-dark px-3" routerLink="/login">
-        <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
-      </button>
-      <button class="btn btn-dark px-3" routerLink="/Registro">
-        <i class="bi bi-door-open-fill"></i> Registrarse
-      </button>
-    </div>
+    @if (loggedIn == false) {
+      <div class="d-flex gap-3">
+        <button class="btn btn-outline-dark" routerLink="/login">
+          <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
+        </button>
+        <button class="btn custom-btn" routerLink="/Registro">
+          <i class="bi bi-door-open-fill"></i> Registrarse
+        </button>
+      </div>
+    }
+    @else {
+      <div class="d-flex gap-3">
+        <button class="btn btn-outline-dark" (click)="cerrarSesion()">
+          <i class="bi bi-box-arrow-in-right"></i> Cerrar sesión
+        </button>
+      </div>
+    }
 
   </div>
 </nav>

@@ -12,6 +12,7 @@ import { PublicarTrabajoComponent } from './pages/publicar-trabajo/publicar-trab
 import { SolicitudTrabajoComponent } from './pages/solicitud-trabajo/solicitud-trabajo.component';
 import { VerPerfilComponent } from './pages/ver-perfil/ver-perfil';
 import { EditarTrabajoComponent } from './pages/editar-trabajo/editar-trabajo';
+import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -21,10 +22,12 @@ export const routes: Routes = [
   {
     path: 'profile',
     component: Profile,
+    canActivate: [AuthGuard],
   },
   {
     path: 'dashboard',
     component: Dashboard,
+    canActivate: [AuthGuard],
   },
   {
     path: 'login',
@@ -47,19 +50,11 @@ export const routes: Routes = [
   {
     path: 'editarTrabajo/:postId',
     component: EditarTrabajoComponent,
+    canActivate: [AuthGuard],
   },
-  {
-    path: 'administracion-contratos',
-    component: AdministracionContratosComponent,
-  },
-  {
-    path: 'publicar-trabajo',
-    component: PublicarTrabajoComponent,
-  },
-  {
-    path: 'solicitud-trabajo',
-    component: SolicitudTrabajoComponent,
-  },
+  { path: 'administracion-contratos', component: AdministracionContratosComponent, canActivate: [AuthGuard], },
+  { path: 'publicar-trabajo', component: PublicarTrabajoComponent, canActivate: [AuthGuard], },
+  { path: 'solicitud-trabajo', component: SolicitudTrabajoComponent, canActivate: [AuthGuard], },
   {
     path: 'verPerfil/:userId',
     component: VerPerfilComponent,

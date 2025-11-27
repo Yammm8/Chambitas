@@ -1,91 +1,131 @@
 <div class="container py-5">
-
-  <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-5">
-    <div class="d-flex align-items-center gap-2">
-      <button class="btn btn-outline-dark btn-sm rounded-circle" (click)="goBack()">
-        <i class="bi bi-arrow-left"></i>
-      </button>
-      <h1 class="fw-bold mb-0">Mis Contratos</h1>
-    </div>
-    <a routerLink="/Lista" class="btn btn-dark d-flex align-items-center gap-2">
-      <i class="bi bi-search"></i> Buscar más trabajos
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="fw-bold mb-0">Administración de contratos</h1>
+    <a routerLink="/Lista" class="btn btn-dark px-4">
+      Buscar más trabajos
     </a>
   </div>
 
-  <!-- Estadísticas -->
-  <div class="row g-4 mb-5 text-center">
-    @for (stat of stats; track $index) {
-    <div class="col-6 col-md-3">
-      <div class="card shadow-sm border-0">
-        <div class="card-body">
-          <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
-            [ngClass]="stat.bgClass" style="width: 50px; height: 50px;">
-            <i [class]="stat.icon"></i>
-          </div>
-          <h3 class="fw-bold mb-0">{{ stat.count }}</h3>
-          <small class="text-muted">{{ stat.label }}</small>
-        </div>
+  <!-- Mensajes de estado -->
+  <div *ngIf="loading" class="alert alert-info">
+    Cargando tus contratos...
+  </div>
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <ng-container *ngIf="!loading && !error">
+    <!-- Tabs rol -->
+    <div
+      class="d-flex flex-wrap justify-content-between align-items-center mb-4"
+    >
+      <div class="btn-group mb-3 mb-md-0">
+        <button
+          class="btn"
+          [ngClass]="{
+            'btn-dark text-white': tabActual === 'trabajador',
+            'btn-outline-secondary': tabActual !== 'trabajador'
+          }"
+          (click)="cambiarTab('trabajador')"
+        >
+          Como trabajador
+        </button>
+        <button
+          class="btn"
+          [ngClass]="{
+            'btn-dark text-white': tabActual === 'empleador',
+            'btn-outline-secondary': tabActual !== 'empleador'
+          }"
+          (click)="cambiarTab('empleador')"
+        >
+          Como empleador
+        </button>
+      </div>
+
+      <!-- Filtros por estado -->
+      <div class="btn-group">
+        <button
+          *ngFor="let f of filtros"
+          class="btn btn-sm"
+          [ngClass]="{
+            'btn-dark text-white': filtroActual === f,
+            'btn-outline-secondary': filtroActual !== f
+          }"
+          (click)="cambiarFiltro(f)"
+        >
+          {{ f }}
+        </button>
       </div>
     </div>
-    }
-  </div>
 
-  <!-- Filtros -->
-  <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
-    @for (f of filtros; track $index) {
-    <button class="btn" [ngClass]="{
-                'btn-dark text-white': filtroActual === f,
-                'btn-outline-secondary': filtroActual !== f
-              }" (click)="filtrar(f)">
-      {{ f | titlecase }}
-    </button>
-    }
-  </div>
+    <h5 class="fw-bold mb-3">{{ tituloTabActual }}</h5>
 
-  <!-- Lista de Contratos -->
-  <div class="row gy-4">
-    @for (c of contratosFiltrados; track $index) {
-    <div class="col-12 col-lg-6">
-      <div class="card shadow-sm border-0 h-100">
-        <div class="card-body d-flex justify-content-between flex-column">
-
-          <div>
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h5 class="fw-bold mb-0">{{ c.titulo }}</h5>
-              <span class="badge px-3 py-2 text-uppercase" [ngClass]="{
-                        'bg-primary': c.estado === 'Activo',
-                        'bg-success': c.estado === 'Completado',
-                        'bg-danger': c.estado === 'Cancelado'
-                      }">
-                {{ c.estado }}
-              </span>
+    <!-- Lista de contratos -->
+    <div class="row gy-4">
+      <div
+        class="col-12 col-lg-6"
+        *ngFor="let c of listaVisible"
+      >
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <h5 class="fw-bold mb-1">{{ c.titulo }}</h5>
+              <p class="text-muted mb-1">
+                Por
+                <span class="fw-semibold">{{ c.contraparte }}</span>
+              </p>
+              <p class="text-muted small mb-2">
+                <i class="bi bi-geo-alt-fill me-1"></i>
+                {{ c.ubicacion }} · {{ c.categoria }}
+                ·
+                <span class="fw-bold text-success">
+                  {{ c.pago | currency : 'MXN' : 'symbol-narrow' }}
+                </span>
+              </p>
+              <p class="text-secondary small mb-0">
+                Del {{ c.fechaInicio || '—' }} al
+                {{ c.fechaFin || '—' }}
+              </p>
             </div>
 
-            <p class="text-muted mb-1">
-              <i class="bi bi-person-circle me-1"></i>{{ c.trabajador }}
-            </p>
+            <div
+              class="d-flex justify-content-between align-items-center mt-3"
+            >
+              <span
+                class="badge px-3 py-2 text-uppercase"
+                [ngClass]="{
+                  'bg-success': c.estado === 'Completado',
+                  'bg-danger': c.estado === 'Cancelado',
+                  'bg-warning text-dark': c.estado === 'Activo'
+                }"
+              >
+                {{ c.estado }}
+              </span>
 
-            <p class="text-muted small mb-2">
-              <i class="bi bi-briefcase-fill me-1"></i>{{ c.categoria }} ·
-              <span class="fw-bold text-success">${{ c.pago | number }}</span>
-            </p>
-
-            <p class="text-secondary small mb-2">
-              <i class="bi bi-calendar-event me-1"></i>{{ c.fechaInicio }} - {{ c.fechaFin }}
-            </p>
-
-            @if (c.creado) {
-            <p class="text-secondary small">
-              <i class="bi bi-clock-history me-1"></i> Creado el {{ c.creado }}
-            </p>
-            }
+              <button
+                class="btn btn-sm btn-outline-success"
+                (click)="marcarCompletado(c)"
+                [disabled]="c.estado === 'Completado' || actualizandoId === c.id"
+              >
+                {{
+                  c.estado === 'Completado'
+                    ? 'Completado'
+                    : (actualizandoId === c.id
+                        ? 'Actualizando...'
+                        : 'Marcar como completado')
+                }}
+              </button>
+            </div>
           </div>
-
         </div>
       </div>
-    </div>
-    }
-  </div>
 
+      <div
+        *ngIf="listaVisible.length === 0"
+        class="text-center text-muted mt-4"
+      >
+        No tienes contratos en esta vista.
+      </div>
+    </div>
+  </ng-container>
 </div>
