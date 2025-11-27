@@ -29,7 +29,7 @@
             {{ user.name }} {{ user.last_name }}
           </h4>
           <p class="text-muted mb-0">
-            {{ user.gender || ' ' }}
+            {{ user.gender=='M'?'Hombre': 'Mujer'  }}
           </p>
         </div>
 
@@ -47,7 +47,7 @@
           </p>
           <p>
             <strong>Fecha de nacimiento:</strong>
-            {{ user.birthday ? (user.birthday | date:'yyyy-MM-dd') : 'Sin registro' }}
+            {{ user.birthday ? ( fixDate( user.birthday )| date:'yyyy-MM-dd') : 'Sin registro' }}
           </p>
 
           <hr />
@@ -55,15 +55,24 @@
           <!-- Medios de contacto -->
           <h5 class="fw-bold mb-3">Medios de contacto</h5>
 
-          <div *ngIf="contacts.length === 0" class="text-muted">
+          <div *ngIf="contact.length === 0" class="text-muted">
             No hay medios de contacto registrados.
           </div>
 
-          <ul *ngIf="contacts.length > 0" class="list-unstyled mb-0">
-            <li *ngFor="let c of contacts" class="mb-1">
-              <strong>{{ c.type }}:</strong> {{ c.value }}
-            </li>
-          </ul>
+          <div *ngIf="contact.length > 0" class="d-flex flex-column gap-2">
+
+          <div *ngFor="let c of contact"
+              class="p-2 rounded border shadow-sm d-flex justify-content-between align-items-center">
+            <span class="fw-semibold">
+              {{ obtenerNombreContacto(c.id!) }}
+            </span>
+            <span class="text-muted small">
+              {{ c.value }}
+            </span>
+          </div>
+
+        </div>
+
         </div>
       </div>
 
@@ -87,9 +96,11 @@
         </div>
 
         <div *ngIf="!loading && posts.length > 0" class="list-group">
+          
           <div
             *ngFor="let p of posts"
             class="list-group-item d-flex justify-content-between align-items-center"
+            (click)="goToJob(p.id)" style="cursor: pointer;"
           >
             <div>
               <div class="fw-semibold">{{ p.title }}</div>

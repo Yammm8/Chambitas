@@ -24,7 +24,7 @@
           <h2 class="fw-bold">{{ job.title }}</h2>
 
           <span class="badge bg-light text-dark">
-            Categoría #{{ job.category_id }}
+            {{ getCategoryName(job.category_id) }}
           </span>
 
           <p class="text-muted mb-0">
@@ -54,7 +54,7 @@
             <div class="col-6">
               <div class="p-2 bg-light rounded">
                 📅 <strong>Fecha límite</strong><br />
-                {{ job.deadline | date:'d/M/yyyy' }}
+                {{ fixDate(job.deadline) | date:'d/M/yyyy' }}
               </div>
             </div>
             <div class="col-6">
@@ -66,7 +66,7 @@
             <div class="col-6">
               <div class="p-2 bg-light rounded">
                 🏷️ <strong>Categoría</strong><br />
-                Categoría #{{ job.category_id }}
+                {{ getCategoryName(job.category_id) }}
               </div>
             </div>
           </div>

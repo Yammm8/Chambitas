@@ -37,8 +37,10 @@ export class JobsListComponent implements OnInit {
   ngOnInit() {
   // Obtener trabajos
   this.jobService.getTrabajos().subscribe((data: Post[]) => {
-    this.jobs = data;
-    this.allJobs = [...data];
+    const hoy = new Date();
+    this.allJobs = data.filter(job => new Date(job.deadline) >= hoy);
+    this.jobs = [...this.allJobs];
+
   });
 
   // Obtener categorías
@@ -50,7 +52,10 @@ export class JobsListComponent implements OnInit {
 
 
   aplicar() {
-  let filtrados = [...this.allJobs];
+  const hoy = new Date();
+  let filtrados = [...this.allJobs].filter(job =>
+    new Date(job.deadline) >= hoy
+  );
 
   // 🔹 FILTRO POR BÚSQUEDA (en título o ubicación)
   if (this.q.trim() !== '') {
@@ -86,7 +91,11 @@ export class JobsListComponent implements OnInit {
   this.q = '';
   this.categoria = '';
   this.ordenar = 'recientes';
-  this.jobs = [...this.allJobs]; // Volvemos a mostrar todo
+
+  const hoy = new Date();
+  this.jobs = this.allJobs.filter(job =>
+    new Date(job.deadline) >= hoy
+  );
 }
 
 

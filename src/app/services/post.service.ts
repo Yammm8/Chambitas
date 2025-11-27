@@ -77,6 +77,7 @@ export class PostService {
   updatePost(id: number, data: any) {
     return this.http.put(`${this.apiUrl}/${id}`, data, {
       withCredentials: true,
+      responseType: 'text' as 'json',
     });
   }
 }

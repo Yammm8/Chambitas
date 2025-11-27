@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from "@angular/router";
 import { AuthService } from '../../services/auth.service';
 import { UserDetail } from '../../services/user.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-registro',
@@ -67,31 +68,70 @@ export class RegisterComponent {
       address: this.address,
     };
 
-    this.authService.register(payload).subscribe({
-      next: (res) => {
-        console.log('Registro exitoso', res);
-        alert('Cuenta creada exitosamente. Por favor, inicia sesión.');
-        this.router.navigate(['/login']);
-      },
-      error: (err) => {
-        console.log(payload)
-        this.error = null;
-        this.fieldErrors = {};
 
-        // Error de validación de campos
-        if (err.error?.errors && Array.isArray(err.error.errors)) {
-          err.error.errors.forEach((e: any) => {
-            this.fieldErrors[e.path] = e.msg;
-          });
-        } 
-        // Error general
-        else if (err.error?.error) {
-          this.error = err.error.error;
-        } 
-        else {
-          this.error = 'Ocurrió un error inesperado';
-        }
-      }
-        });
+this.authService.register(payload).subscribe({
+  next: (res) => {
+    console.log('Registro exitoso', res);
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Cuenta creada correctamente',
+      text: 'Tu cuenta fue registrada exitosamente. Ahora puedes iniciar sesión.',
+      confirmButtonText: 'Continuar',
+      confirmButtonColor: '#4CAF50'
+    }).then(() => {
+      this.router.navigate(['/login']);
+    });
+  },
+
+  error: (err) => {
+    console.log(payload);
+    this.error = null;
+    this.fieldErrors = {};
+
+    // Errores de validación
+    if (err.error?.errors && Array.isArray(err.error.errors)) {
+
+      // Recorremos uno por uno
+      err.error.errors.forEach((e: any) => {
+        this.fieldErrors[e.path] = e.msg;
+      });
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Revisa los campos',
+        html: err.error.errors
+          .map((e: any) => `<b>${e.path}</b>: ${e.msg}`)
+          .join('<br>'),
+        confirmButtonText: 'Entendido'
+      });
+    }
+
+    // Error general
+    else if (err.error?.error) {
+      this.error = err.error.error;
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: err.error.error,
+        confirmButtonText: 'Ok'
+      });
+    }
+
+    // Error inesperado
+    else {
+      this.error = 'Ocurrió un error inesperado';
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error inesperado',
+        text: 'Por favor intenta de nuevo más tarde.',
+        confirmButtonText: 'Ok'
+      });
+    }
+  }
+});
+
   }
 }

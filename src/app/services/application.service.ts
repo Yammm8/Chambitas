@@ -58,8 +58,10 @@ export class ApplicationService {
   /** 🔹 Aplicaciones de un post específico (para el empleador) */
   getApplicationsByPost(postId: number): Observable<Application[]> {
     // GET http://localhost:4000/api/application/:postId
+    console.log('Llamando al backend con postId:', postId);
     return this.http.get<Application[]>(`${this.apiUrl}/${postId}`, {
       withCredentials: true,
+      headers: { 'Cache-Control': 'no-cache' },
     });
   }
 

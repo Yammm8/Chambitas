@@ -9,6 +9,7 @@ import {
   ContactDetail,
 } from '../../services/user.service';
 import { PostService, Post } from '../../services/post.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-ver-perfil',
@@ -18,8 +19,8 @@ import { PostService, Post } from '../../services/post.service';
   styleUrl: './ver-perfil.css',
 })
 export class VerPerfilComponent implements OnInit {
-  user: UserDetail | null = null;
-  contacts: ContactDetail[] = [];
+  user: User | null = null;
+  contact: Contact[] = [];
   posts: Post[] = [];
 
   isOwnProfile = false;
@@ -31,103 +32,104 @@ export class VerPerfilComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private userSvc: userService,
-    private postService: PostService
+    private postService: PostService,
+    private authSvc: AuthService,
   ) {}
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
-
-    // 👇 Intentamos leer el state de la navegación ACTUAL
     const nav = this.router.getCurrentNavigation();
     const navState = (nav?.extras?.state || {}) as { userFromJob?: any };
 
-    // Si por alguna razón getCurrentNavigation es null (por recargas, etc.),
-    // usamos history.state como respaldo
     const stateUser = navState.userFromJob ?? (history.state as any).userFromJob ?? null;
+    const currentUser = this.userSvc.getUsuario() as User | null;
 
-    const currentUser = (this.userSvc.getUsuario() as any) as UserDetail | null;
-
-    console.log('VerPerfil init =>', {
-      idParam,
-      stateUser,
-      currentUser,
-      historyState: history.state,
-    });
-
-    // 1) PERFIL DE EMPLEADOR viniendo de JobDetail (tiene state.userFromJob)
+    // Caso 1: si vengo desde un job, tomar el id de stateUser
     if (stateUser) {
-      this.cargarPerfilDesdeJob(stateUser, currentUser);
+      this.cargarPerfilPorId(stateUser.id, currentUser);
       return;
     }
 
-    // 2) PERFIL PROPIO (ruta /Perfil o /verPerfil SIN id)
+    // Caso 2: si NO viene id por URL, significa que es el perfil propio
     if (!idParam && currentUser) {
-      this.cargarPerfilPropio(currentUser);
+      this.cargarPerfilPorId(currentUser.id, currentUser);
       return;
     }
 
-    // 3) Fallback: /verPerfil/:id escrito a mano que coincide con el usuario logueado
-    if (idParam && currentUser && Number(idParam) === currentUser.id) {
-      this.cargarPerfilPropio(currentUser);
+    // Caso 3: /verPerfil/:id
+    if (idParam) {
+      this.cargarPerfilPorId(Number(idParam), currentUser);
       return;
     }
 
-    // 4) Si llegamos aquí y no tenemos stateUser ni usuario actual coherente
     this.error = 'No se pudo cargar el perfil solicitado.';
   }
 
+
   // ---------- helpers ----------
 
-  private cargarPerfilPropio(currentUser: UserDetail): void {
-    this.isOwnProfile = true;
-    this.user = currentUser;
-    this.contacts = currentUser.contacts ?? [];
-    this.cargarMisPublicaciones();
+  obtenerNombreContacto(id: number): string {
+    switch (id) {
+      case 1: return 'Correo';
+      case 2: return 'Teléfono';
+      case 3: return 'LinkedIn';
+      case 4: return 'Instagram';
+      default: return 'Otro';
+    }
+  }
+  goToJob(id: number) {
+      this.router.navigateByUrl(`job-detail/${id}`);
+    }
+
+
+  private cargarPerfilPorId(id: number, currentUser: User | null): void {
+    this.loading = true;
+
+    this.authSvc.getUserById(id).subscribe({
+      next: (userData) => {
+        this.user = userData;
+        this.contact = userData.contact || [];
+
+        this.isOwnProfile = currentUser ? currentUser.id === userData.id : false;
+
+        // 👇 SOLO AQUÍ cargamos posts después de saber el id del user
+        this.cargarMisPublicaciones();
+
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error cargando usuario:', err);
+        this.error = 'No se pudo cargar el perfil solicitado.';
+        this.loading = false;
+      }
+    });
   }
 
-  private cargarPerfilDesdeJob(
-    stateUser: any,
-    currentUser: UserDetail | null
-  ): void {
-    this.isOwnProfile = !!(currentUser && currentUser.id === stateUser.id);
-
-    // armamos un UserDetail a partir del user que vino en el job
-    this.user = {
-      id: stateUser.id,
-      name: stateUser.name,
-      last_name: stateUser.last_name,
-      email: stateUser.email ?? '',
-      gender: stateUser.gender ?? '',
-      description: stateUser.description ?? 'Sin descripción',
-      birthday: stateUser.birthday ?? '',
-      address: stateUser.address ?? 'Sin dirección',
-      contacts: [],
-      password: '',
-      password_confirmation: '',
-    };
-
-    this.contacts = [];
-this.cargarMisPublicaciones();
-  }
 
   private cargarMisPublicaciones(): void {
-  if (!this.user) return; // por seguridad
+    if (!this.user) return; // por seguridad
 
-  this.loading = true;
-  this.postService.getPostsByProfile(this.user.id!).subscribe({
-    next: (posts) => {
-      this.posts = posts;
-      this.loading = false;
-    },
-    error: (err) => {
-      console.error('Error cargando publicaciones:', err);
-      this.loading = false;
-    },
-  });
-}
+    this.loading = true;
+    this.postService.getPosts().subscribe({
+      next: (posts) => {
+        this.posts = posts.filter((job) => job.user_id === this.user?.id);
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error cargando publicaciones:', err);
+        this.loading = false;
+      },
+    });
+  }
 
 
   goBack(): void {
     this.location.back();
+  }
+
+  fixDate(dateStr: string): Date {
+    const d = new Date(dateStr);
+    d.setDate(d.getDate() + 1);
+    return d;
   }
 }

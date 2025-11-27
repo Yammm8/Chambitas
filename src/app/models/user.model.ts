@@ -8,4 +8,5 @@ interface User {
   address: string;
   birthday: string;
   contact?: Contact[];
+  post?: Post[];
 }

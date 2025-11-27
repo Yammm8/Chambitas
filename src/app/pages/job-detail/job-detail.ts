@@ -8,6 +8,7 @@ import {
   ApplicationService,
   Application,
 } from '../../services/application.service';
+import { Job } from '../../services/job';
 
 @Component({
   selector: 'app-job-detail',
@@ -20,6 +21,7 @@ export class JobDetailComponent implements OnInit {
   job: Post | null = null;
   cargando = false;
   error: string | null = null;
+  categories: Category[] = [];
 
   // sesión / dueño
   loggedIn = false;
@@ -37,7 +39,8 @@ export class JobDetailComponent implements OnInit {
     private postService: PostService,
     private userSvc: userService,
     private router: Router,
-    private applicationService: ApplicationService
+    private applicationService: ApplicationService,
+    private jobService: Job,
   ) {}
 
   ngOnInit(): void {
@@ -49,7 +52,12 @@ export class JobDetailComponent implements OnInit {
       return;
     }
 
+    this.jobService.getCategories().subscribe((data: Category[]) => {
+    this.categories = data;
+  });
+
     this.cargarTrabajo(id);
+
   }
 
   private cargarTrabajo(id: number): void {
@@ -78,6 +86,7 @@ export class JobDetailComponent implements OnInit {
       },
     });
   }
+  
 
   /** Calcula si hay usuario logueado y si es dueño del trabajo */
   private actualizarFlagsDeUsuario(): void {
@@ -183,4 +192,17 @@ verPerfil(): void {
       },
     });
   }
+
+  getCategoryName(id?: number): string {
+    if (!id) return 'Sin categoría';
+    const cat = this.categories.find(c => c.id === id);
+    return cat ? cat.name : 'Sin categoría';
+  }
+
+  fixDate(dateStr: string): Date {
+    const d = new Date(dateStr);
+    d.setDate(d.getDate() + 1);
+    return d;
+  }
+
 }

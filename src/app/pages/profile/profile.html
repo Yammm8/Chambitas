@@ -29,40 +29,54 @@
   </div>
 </div>
 @if (!Editar) {
-  <div class="container d-flex justify-content-center align-items-start mt-4 gap-3">
-    <div class="container mt-4">
-        <div class="card shadow px-5 py-4" style=" margin: 0 auto;">
-            <h5 class="card-title mb-3 fw-bold" >Resumen del perfil</h5>
-            <br>
-            <h6 class="card-subtitle mb-2 text-muted">Nombre Completo</h6>
-            <p class="card-text mb-3" style="color:rgb(143, 143, 143) ">{{usuario?.name}} {{usuario?.last_name}}</p>
-            <h6 class="card-subtitle mb-2 text-muted">Correo</h6>
-            <p class="card-text mb-3" style="color:rgb(143, 143, 143) ">{{usuario?.email}}</p>
-    
+<div class="container mt-4">
+
+  <div class="row g-4 justify-content-center">
+
+    <!-- PERFIL -->
+    <div class="col-12 col-md-5">
+      <div class="card shadow border-1 rounded-4 p-4">
+        <h5 class="fw-bold mb-4 text-center">Resumen del perfil</h5>
+
+        <div class="mb-3">
+          <h6 class="text-muted mb-1">Nombre Completo</h6>
+          <p class="text-secondary mb-0">{{ usuario?.name }} {{ usuario?.last_name }}</p>
         </div>
-    </div>
-    
-    <div class="card shadow px-5 py-4" style=" margin: 0 auto;">
-    <h5 class="card-title mb-3 fw-bold">Información de contacto</h5>
 
-    <div *ngIf="contacts.length === 0" class="d-flex flex-column justify-content-center align-items-center">
-        <i class="bi bi-telephone-plus-fill fs-1 text-muted"></i>
-        <br>
-        <p class="card-text mb-3" style="color:rgb(143, 143, 143)">No hay información de contacto</p>
+        <div>
+          <h6 class="text-muted mb-1">Correo</h6>
+          <p class="text-secondary mb-0">{{ usuario?.email }}</p>
+        </div>
+      </div>
     </div>
 
-    <ul *ngIf="contacts.length > 0" class="list-group">
-        <li *ngFor="let c of contacts" class="list-group-item d-flex justify-content-between align-items-center">
+    <!-- CONTACTO -->
+    <div class="col-12 col-md-5">
+      <div class="card shadow border-1 rounded-4 p-4">
+        <h5 class="fw-bold mb-4 text-center">Información de contacto</h5>
+
+        <!-- Sin contactos -->
+        <div *ngIf="contacts.length === 0" class="text-center py-4">
+          <i class="bi bi-telephone-plus-fill fs-1 text-muted"></i>
+          <p class="mt-3 text-secondary">No hay información de contacto</p>
+        </div>
+
+        <!-- Lista de contactos -->
+        <ul *ngIf="contacts.length > 0" class="list-group list-group-flush">
+          <li *ngFor="let c of contacts" class="list-group-item d-flex justify-content-between border-0 ps-0">
             <span>
-              <strong>{{ getContactType(c.contact_means_id) }}:</strong> {{ c.value }}
+              <strong>{{ getContactType(c.contact_means_id) }}:</strong>
+              {{ c.value }}
             </span>
-        </li>
-    </ul>
-</div>
+          </li>
+        </ul>
+      </div>
+    </div>
 
-    <br>
+  </div>
 </div>
 }
+
 
 @if (Editar) {
   <br>

@@ -108,6 +108,7 @@ solicitudes: CardItem[] = [];
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: (data) => {
+          console.log(data);
           this.post = { ...data, deadline: data.deadline?.split('T')[0] ?? '' };
           // seleccionar categoría si viene en el post
           if ((data as any).category_id) {
@@ -131,6 +132,7 @@ solicitudes: CardItem[] = [];
       this.solicitudes = data.map((s) => {
         const u: any = (s as any).user ?? (s as any).User ?? null;
         const estadoUI = mapEstadoToUI(s.status);
+        console.log(data);
 
         return {
           id: s.id,
@@ -145,7 +147,12 @@ solicitudes: CardItem[] = [];
         };
       });
     },
-    error: () => this.error = 'No se pudo cargar solicitudes',
+    error: (err) =>{
+    this.error = 'No se pudo cargar solicitudes';
+    console.error(err)
+    }
+      
+
   });
 }
 
@@ -168,18 +175,24 @@ solicitudes: CardItem[] = [];
     };
 
     this.postService
-      .updatePost(this.post.id, payload)
-      .pipe(finalize(() => (this.saving = false)))
-      .subscribe({
-        next: (updated) => {
-          this.success = 'Cambios guardados correctamente.';
-          this.post = { ...this.post, ...updated };
-        },
-        error: (err) => {
-          console.error(err);
-          this.error = 'No se pudieron guardar los cambios';
-        },
-      });
+    .updatePost(this.post.id, payload)
+    .pipe(finalize(() => (this.saving = false)))
+    .subscribe({
+      next: (updated) => {
+        this.success = 'Cambios guardados correctamente.';
+        this.post = { ...this.post, ...updated };
+      },
+      error: (err) => {
+        console.error('Error: ', err);
+
+        const backendMessage =
+          err?.error?.message || err?.error?.error || err?.error;
+
+        this.error = backendMessage
+          ? backendMessage
+          : 'No se pudieron guardar los cambios.';
+      },
+    });
   }
 
   // Recibe evento desde <app-card-item>

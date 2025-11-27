@@ -16,7 +16,7 @@ interface ContactMeans {
 })
 export class ProfileContact implements OnInit {
 
-  @Input() contacts: Contact[] = [];
+  contacts: Contact[] = [];
 
   contactMeans: ContactMeans[] = [
     { id: 1, type: "Email" },
@@ -64,7 +64,8 @@ export class ProfileContact implements OnInit {
         this.contacts.push({
           id: newId,
           contactMeansId: payload.contact_means_id,
-          value: payload.value
+          value: payload.value,
+          type: this.getContactType(payload.contact_means_id)
         });
 
         this.formData = { contact_means_id: '', value: '' };

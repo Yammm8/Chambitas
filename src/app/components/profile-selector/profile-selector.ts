@@ -31,7 +31,7 @@ import { userService } from '../../services/user.service';
   <app-profile-details></app-profile-details>
 }
 @if (verInfoContacto) {
-  <app-profile-contact [contacts]="contacts"></app-profile-contact>
+  <app-profile-contact></app-profile-contact>
 }
 
   `,
@@ -56,7 +56,6 @@ import { userService } from '../../services/user.service';
     color: white;
   }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileSelectorComponent { 
 

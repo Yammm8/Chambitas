@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PostService } from '../../services/post.service';
+import { Job } from '../../services/job';
 
 @Component({
   selector: 'app-publicar-trabajo',
@@ -10,19 +11,28 @@ import { PostService } from '../../services/post.service';
   templateUrl: './publicar-trabajo.component.html',
   styleUrls: ['./publicar-trabajo.component.css'],
 })
-export class PublicarTrabajoComponent {
+export class PublicarTrabajoComponent implements OnInit {
   titulo = '';
   categoria = '';
   descripcion = '';
   pago: number | null = null;
   fechaLimite = '';
   ubicacion = '';
+  categorias: Category[] = [];
 
   loading = false;
   error = '';
   success = false;
 
-  constructor(private postService: PostService) {}
+  constructor(private postService: PostService, private jobService: Job) {}
+  
+  ngOnInit(): void {
+
+    this.jobService.getCategories().subscribe((data: Category[]) => {
+    this.categorias = data;
+  });
+
+  }
 
   onSubmit() {
     this.error = '';
@@ -39,22 +49,6 @@ export class PublicarTrabajoComponent {
       return;
     }
 
-    // Mapeo simple de categoría → id
-    let category_id = 1;
-    switch (this.categoria) {
-      case 'Limpieza':
-        category_id = 1;
-        break;
-      case 'Cuidado de mascotas':
-        category_id = 2;
-        break;
-      case 'Jardinería':
-        category_id = 3;
-        break;
-      default:
-        category_id = 1;
-        break;
-    }
 
     const payload = {
       title: this.titulo,
@@ -62,7 +56,7 @@ export class PublicarTrabajoComponent {
       pay: this.pago,
       deadline: this.fechaLimite,
       location: this.ubicacion,
-      category_id,
+      category_id: this.categoria,
     };
 
     this.loading = true;
