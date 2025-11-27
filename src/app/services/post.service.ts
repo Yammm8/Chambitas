@@ -19,9 +19,9 @@ export interface Post {
   status: boolean;
   location: string;
   user_id: number;
-  category_id: number;
+  category_id?: number;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
 
   // 👇 el backend manda el objeto user anidado
   user?: PostUser;

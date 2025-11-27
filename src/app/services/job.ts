@@ -1,6 +1,8 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { environment } from '../../environments/environment.development';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { PostService, Post } from './post.service';
+import { Post } from './post.service';
 
 // Reutilizamos el tipo Post para los trabajos del home
 export type JobDetail = Post;
@@ -9,15 +11,23 @@ export type JobDetail = Post;
   providedIn: 'root'
 })
 export class Job {
+  private baseUrl = environment.apiUrl;
+  private http = inject(HttpClient)
+  
+  getTrabajos(): Observable<Post[]>{
+  return this.http.get<Post[]>(`${this.baseUrl}/post/`);
+}
 
-  constructor(private postService: PostService) {}
-
-  /**
-   * Obtiene trabajos desde el backend.
-   * limit = cuántos trabajos quieres
-   * page = página (el backend está usando 0 como primera página)
-   */
-  getTrabajos(limit: number = 6, page: number = 0): Observable<JobDetail[]> {
-    return this.postService.getPosts(limit, page);
+  getTrabajoPorId(id: number): Observable<Post>{
+    return this.http.get<Post>(`${this.baseUrl}/post/${id}`);
   }
+
+  getTrabajosLimit(limit: number, page: number): Observable<Post[]>{
+    return this.http.get<Post[]>(`${this.baseUrl}/post?limit=${limit}&page=${page}`)
+  }
+
+  getCategories(): Observable<Category[]> {
+  return this.http.get<Category[]>(`${this.baseUrl}/categories`);
+}
+
 }

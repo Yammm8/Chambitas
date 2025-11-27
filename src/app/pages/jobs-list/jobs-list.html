@@ -11,12 +11,13 @@
 
       <div class="col-md-3">
         <select [(ngModel)]="categoria" name="categoria" class="form-select">
-          <option value="">Todas las categorías</option>
-          <option value="1">Limpieza</option>
-          <option value="2">Delivery</option>
-          <option value="3">Cuidado de mascotas</option>
-          <!-- puedes actualizar esto cuando tengas categorías reales -->
-        </select>
+        <option value="">Todas las categorías</option>
+
+        <option *ngFor="let cat of categories" [value]="cat.id">
+          {{ cat.name }}
+        </option>
+      </select>
+
       </div>
 
       <div class="col-md-3">
@@ -41,20 +42,13 @@
 
     <div *ngFor="let job of jobs" class="col-md-4">
       <div class="card h-100 shadow-sm border-0">
-
         <div class="card-body">
-          
           <h5 class="card-title fw-bold">{{ job.title }}</h5>
-
-          <span class="badge bg-light text-dark mb-2">
-            Categoría #{{ job.category_id }}
-          </span>
+          <span class="badge bg-light text-dark mb-2">{{ getCategoryName(job.category_id) }}
+</span>
 
           <p class="text-muted small mb-1">{{ job.location }}</p>
-
-          <p class="fw-bold text-success">
-            {{ job.pay | currency:'MXN':'symbol-narrow' }}
-          </p>
+          <p class="fw-bold text-success">{{ job.pay| currency:'MXN':'symbol-narrow' }}</p>
 
           <button (click)="goToJob(job.id)" class="btn btn-dark w-100 mt-2">
             Ver Detalles

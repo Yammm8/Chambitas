@@ -3,4 +3,5 @@ interface Contact {
   contactMeansId?: number;
   userId?: number;
   value?: string;
+  type?: string;
 }

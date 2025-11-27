@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { catchError, map, Observable, of, tap } from 'rxjs';
 import { UserDetail, userService } from './user.service';
 import { Router } from '@angular/router';
 
@@ -23,6 +23,13 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/auth/login`, { email, password }, { withCredentials: true, responseType: 'text' })
   }
 
+  validateSession(): Observable<User> {
+  return this.http.get<User>(`${this.baseUrl}/user`, {
+    withCredentials: true,
+  });
+}
+
+
 
   logout() {
   return this.http.post(`${this.baseUrl}/auth/logout`, {}, { 
@@ -35,16 +42,33 @@ export class AuthService {
     return this.http.post<any>(`${this.baseUrl}/auth/create-account`, payload);
   }
 
-  isLoggedIn(): boolean {
-    const usuario = this.userService.getUsuario();
-    if (usuario){
-      return true;
-    }
-    return false;
+isLoggedIn(): Observable<boolean> {
+  const usuario = this.userService.getUsuario();
+
+  // Si ya está en memoria → true directo
+  if (usuario) {
+    return of(true);
   }
+
+  // Si no, intenta restaurar sesión usando la cookie
+  return this.validateSession().pipe(
+    map(user => {
+      this.userService.setUsuario(user);
+      return true;
+    }),
+    catchError(() => of(false))
+  );
+}
+
 
   getUserData() {
     return this.http.get<User>(`${this.baseUrl}/user/`, {
+      withCredentials: true,
+    });
+  }
+
+  getUserById(userId: Number){
+    return this.http.get<User>(`${this.baseUrl}/user/${userId}`, {
       withCredentials: true,
     });
   }

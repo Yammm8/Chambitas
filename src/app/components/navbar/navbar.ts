@@ -19,7 +19,10 @@ interface MenuItem {
 export class Navbar {
   loggedIn: boolean = false;
   constructor(public authService : AuthService, public userService: userService, private router: Router) {
-    this.loggedIn= this.authService.isLoggedIn()
+    this.authService.isLoggedIn().subscribe(isAuth => {
+  this.loggedIn = isAuth;
+});
+
   }
   menuList: MenuItem[] = [
     { name: 'Home', route: '/home' },

@@ -29,7 +29,7 @@ interface ContratoUI {
 @Component({
   selector: 'app-administracion-contratos',
   standalone: true,
-  imports: [CommonModule, RouterLink, CurrencyPipe, DatePipe],
+  imports: [CommonModule, RouterLink, CurrencyPipe],
   templateUrl: './administracion-contratos.component.html',
   styleUrls: ['./administracion-contratos.component.css'],
 })

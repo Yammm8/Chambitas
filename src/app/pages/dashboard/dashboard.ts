@@ -3,7 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 import { DashboardCardComponent } from '../../components/dashboard-card/dashboard-card';
-import { PostService, Post } from '../../services/post.service';
+import { Router } from '@angular/router';
+import { Job } from '../../services/job';
+import { AuthService } from '../../services/auth.service';
+import { Post, PostService } from '../../services/post.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,17 +15,26 @@ import { PostService, Post } from '../../services/post.service';
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css'],
 })
-export class Dashboard implements OnInit {
+export class Dashboard {
   posts: Post[] = [];
-
+  userId!: number;
   cargando = false;
   error: string | null = null;
 
-  constructor(private postService: PostService) {}
+  constructor(private router: Router, private jobService: Job, private authService: AuthService, private postService: PostService) {}
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.cargarTrabajosRecientes();
+    this.authService.getUserData().subscribe((user: User) => {
+      this.userId = user.id;
+
+      this.jobService.getTrabajos().subscribe((data: Post[]) => {
+        this.posts = data.filter((job) => job.user_id === this.userId);
+      });
+    });
   }
+
+  
 
   cargarTrabajosRecientes(): void {
     this.cargando = true;

@@ -9,10 +9,10 @@
              alt="Avatar">
         <div>
             <h5 class="card-title mb-1 fw-bold" style="color: black;">{{usuario?.name}} {{usuario?.last_name}}</h5>
-            <p class="card-text text-muted mb-0"></p>
+            <p class="card-text text-muted mb-0">{{usuario?.email}}</p>
             <br>
             <span class="badge rounded-pill bg-light text-dark border">
-                0 contactos
+                {{usuario?.contact?.length}} contactos
             </span>
 
         </div>
@@ -36,22 +36,30 @@
             <br>
             <h6 class="card-subtitle mb-2 text-muted">Nombre Completo</h6>
             <p class="card-text mb-3" style="color:rgb(143, 143, 143) ">{{usuario?.name}} {{usuario?.last_name}}</p>
-            <h6 class="card-subtitle mb-2 text-muted"></h6>
-            <p class="card-text mb-3" style="color:rgb(143, 143, 143) "></p>
+            <h6 class="card-subtitle mb-2 text-muted">Correo</h6>
+            <p class="card-text mb-3" style="color:rgb(143, 143, 143) ">{{usuario?.email}}</p>
     
         </div>
     </div>
     
-    <div class="container mt-4">
-        <div class="card shadow px-5 py-4" style=" margin: 0 auto;">
-            <h5 class="card-title mb-3 fw-bold">Información de contacto</h5>
-            <div class="d-flex flex-column justify-content-center align-items-center">
-                <i class="bi bi-telephone-plus-fill fs-1 text-muted"></i>
-                <br>
-                <p class="card-text mb-3" style="color:rgb(143, 143, 143) ">No hay información de contacto</p>
-            </div>
-        </div>
+    <div class="card shadow px-5 py-4" style=" margin: 0 auto;">
+    <h5 class="card-title mb-3 fw-bold">Información de contacto</h5>
+
+    <div *ngIf="contacts.length === 0" class="d-flex flex-column justify-content-center align-items-center">
+        <i class="bi bi-telephone-plus-fill fs-1 text-muted"></i>
+        <br>
+        <p class="card-text mb-3" style="color:rgb(143, 143, 143)">No hay información de contacto</p>
     </div>
+
+    <ul *ngIf="contacts.length > 0" class="list-group">
+        <li *ngFor="let c of contacts" class="list-group-item d-flex justify-content-between align-items-center">
+            <span>
+              <strong>{{ getContactType(c.contact_means_id) }}:</strong> {{ c.value }}
+            </span>
+        </li>
+    </ul>
+</div>
+
     <br>
 </div>
 }

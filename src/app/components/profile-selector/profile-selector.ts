@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { ProfileContact } from '../profile-contact/profile-contact';
 import { ProfileDetails } from '../profile-details/profile-details';
 import { ProfilePersonal } from '../profile-personal/profile-personal';
@@ -63,12 +63,18 @@ export class ProfileSelectorComponent {
   contacts: Contact[] = [];
   user: User | null = null;
 
-
-  constructor(private userService: userService) {}
+  constructor(
+    private userService: userService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
-    this.user = this.userService.getUsuario();
-    this.contacts = this.user?.contacts || [];
+    this.userService.usuario$.subscribe(u => {
+      this.user = u;
+      this.contacts = u?.contact || [];
+
+      this.cdr.markForCheck();
+    });
   }
   
 
