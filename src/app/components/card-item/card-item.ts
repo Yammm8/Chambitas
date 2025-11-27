@@ -13,36 +13,53 @@ export interface CardItem {
   fecha?: string; // fecha de solicitud
   fechaInicio?: string; // contratos
   fechaFin?: string; // contratos
-  estado: string;
+  estado: "pendiente" | "aceptada" | "rechazada";
   tipo: 'solicitud' | 'contrato';
 }
 
+// components/card-item/card-item.component.ts
 @Component({
   selector: 'app-card-item',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './card-item.html',
-  styleUrl: './card-item.css',
+  styleUrls: ['./card-item.css'],
 })
-export class CardItem {
+export class CardItemComponent {
   @Input() item!: CardItem;
-
-  @Output() estadoCambiado = new EventEmitter<{ id?: number; nuevoEstado: string }>();
+  @Output() estadoGuardado = new EventEmitter<{ id: number; estado: "pendiente" | "aceptada" | "rechazada"; fecha?: string }>();
 
   get opcionesEstado(): string[] {
-    if (this.item.tipo === 'solicitud') {
-      return ['Pendiente', 'Aceptada', 'Rechazada'];
-    } else {
-      return ['Activo', 'Completado', 'Cancelado'];
-    }
+    return this.item.tipo === 'solicitud'
+      ? ['Pendiente', 'Aceptada', 'Rechazada']
+      : ['Activo', 'Completado', 'Cancelado'];
   }
 
-  cambiarEstado(nuevo: string) {
-    this.item.estado = nuevo;
-    this.estadoCambiado.emit({ id: this.item.id, nuevoEstado: nuevo });
+  claseBoton(): string {
+    const e = this.item.estado.toLowerCase();
+    if (e === 'pendiente') return 'btn-warning';
+    if (e === 'aceptada' || e === 'completado') return 'btn-success';
+    if (e === 'rechazada' || e === 'cancelado') return 'btn-danger';
+    if (e === 'activo') return 'btn-primary';
+    return 'btn-secondary';
   }
 
-  guardarCambios() {
-    this.estadoCambiado.emit({ id: this.item.id, nuevoEstado: this.item.estado });
-  }
+ guardarCambios() {
+  if (!this.item.id) return;
+  if (this.bloqueado()) return; // ⛔ no permitir emitir cambios finales
+
+  this.estadoGuardado.emit({
+    id: this.item.id,
+    estado: this.item.estado,
+    fecha: this.item.estado === 'aceptada' ? this.item.fechaInicio : undefined
+  });
 }
+
+bloqueado(): boolean {
+  return this.item.estado === 'aceptada' || this.item.estado === 'rechazada';
+}
+
+
+}
+
+

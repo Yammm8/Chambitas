@@ -37,6 +37,8 @@ export interface Application {
   user?: ApplicationUser;
 }
 
+
+
 @Injectable({
   providedIn: 'root',
 })
