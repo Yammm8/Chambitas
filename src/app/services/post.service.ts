@@ -52,6 +52,12 @@ export class PostService {
     });
   }
 
+   getPostsByProfile(userId: number): Observable<Post[]> {
+    return this.http.get<Post[]>(`${this.apiUrl}/postsByProfile/${userId}`, {
+      withCredentials: true,
+    });
+  }
+
   /** Obtener un post por id (detalle / editar) */
   getPostById(id: number): Observable<Post> {
     return this.http.get<Post>(`${this.apiUrl}/${id}`, {

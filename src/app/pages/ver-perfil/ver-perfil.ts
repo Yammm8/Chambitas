@@ -107,28 +107,25 @@ export class VerPerfilComponent implements OnInit {
     };
 
     this.contacts = [];
-
-    if (this.isOwnProfile) {
-      // si casualmente estás viendo TU propio trabajo, sí mostramos tus publicaciones
-      this.cargarMisPublicaciones();
-    } else {
-      this.posts = []; // dejamos vacío para no mostrar cosas viejas
-    }
+this.cargarMisPublicaciones();
   }
 
   private cargarMisPublicaciones(): void {
-    this.loading = true;
-    this.postService.getPostsByUser().subscribe({
-      next: (posts) => {
-        this.posts = posts;
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error(err);
-        this.loading = false;
-      },
-    });
-  }
+  if (!this.user) return; // por seguridad
+
+  this.loading = true;
+  this.postService.getPostsByProfile(this.user.id!).subscribe({
+    next: (posts) => {
+      this.posts = posts;
+      this.loading = false;
+    },
+    error: (err) => {
+      console.error('Error cargando publicaciones:', err);
+      this.loading = false;
+    },
+  });
+}
+
 
   goBack(): void {
     this.location.back();
